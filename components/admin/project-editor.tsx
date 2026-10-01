@@ -25,6 +25,7 @@ export type EditorInitial = {
   architecture: string;
   challenges: string;
   lessons: string;
+  features_raw: string;
   hero_image_url: string;
   github_url: string;
   live_url: string;
@@ -45,6 +46,7 @@ const EMPTY: EditorInitial = {
   architecture: "",
   challenges: "",
   lessons: "",
+  features_raw: "",
   hero_image_url: "",
   github_url: "",
   live_url: "",
@@ -113,6 +115,9 @@ export function ProjectEditor({
       </div>
       <Field label="OVERVIEW">
         <Textarea name="overview" rows={3} defaultValue={initial.overview} />
+      </Field>
+      <Field label="FEATURES (one per line)">
+        <Textarea name="features_raw" rows={4} defaultValue={initial.features_raw} placeholder={"Fast checklists\nEvidence uploads"} />
       </Field>
       <Field label="ARCHITECTURE">
         <Textarea name="architecture" rows={3} defaultValue={initial.architecture} />

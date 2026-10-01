@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { PROJECTS } from "@/lib/projects";
+import type { ProjectCard } from "@/lib/projects";
 import { Reveal } from "@/components/animation/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,8 +26,10 @@ function TechRow({ tech }: { tech: string[] }) {
   );
 }
 
-export function Projects() {
-  const [featured, ...rest] = PROJECTS;
+export function Projects({ items }: { items?: ProjectCard[] }) {
+  const list = items?.length ? items : PROJECTS;
+  const featured = list.find((p) => p.featured) ?? list[0];
+  const rest = list.filter((p) => p.slug !== featured.slug);
   const sectionRef = useRef<HTMLElement>(null);
   const visualRef = useRef<HTMLSpanElement>(null);
 

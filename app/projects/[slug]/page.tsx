@@ -6,11 +6,14 @@ import { Navbar } from "@/components/portfolio/navbar";
 import { Footer } from "@/components/portfolio/footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PROJECTS, getProject } from "@/lib/projects";
+import { PROJECTS } from "@/lib/projects";
+import { getPublicProjectDetail, getPublicProjectSlugs } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
-export function generateStaticParams() {
-  return PROJECTS.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const dbSlugs = await getPublicProjectSlugs();
+  const slugs = new Set([...PROJECTS.map((p) => p.slug), ...dbSlugs]);
+  return [...slugs].map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -19,7 +22,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const p = getProject(slug);
+  const p = await getPublicProjectDetail(slug);
   if (!p) return { title: "Project not found" };
   return {
     title: `${p.title} — Vidun`,
@@ -53,7 +56,7 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const p = getProject(slug);
+  const p = await getPublicProjectDetail(slug);
   if (!p) notFound();
 
   return (

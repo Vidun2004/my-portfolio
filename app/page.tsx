@@ -7,8 +7,18 @@ import { Hero } from "@/components/portfolio/hero";
 import { Navbar } from "@/components/portfolio/navbar";
 import { Projects } from "@/components/portfolio/projects";
 import { Skills } from "@/components/portfolio/skills";
+import {
+  getPublicExperience,
+  getPublicProjects,
+  getPublicSkills,
+} from "@/lib/content";
 
-export default function Home() {
+export default async function Home() {
+  const [projects, skills, experience] = await Promise.all([
+    getPublicProjects(),
+    getPublicSkills(),
+    getPublicExperience(),
+  ]);
   return (
     <div className="bg-cream text-ink relative min-h-screen overflow-x-clip">
       <Navbar />
@@ -16,9 +26,9 @@ export default function Home() {
         <Hero />
         <Capabilities />
         <About />
-        <Skills />
-        <Projects />
-        <Experience />
+        <Skills items={skills} />
+        <Projects items={projects} />
+        <Experience steps={experience} />
         <Contact />
       </main>
       <Footer />

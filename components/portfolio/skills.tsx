@@ -3,23 +3,11 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { Reveal } from "@/components/animation/reveal";
+import type { SkillItem } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
-type Category =
-  | "languages"
-  | "frontend"
-  | "backend"
-  | "mobile"
-  | "database"
-  | "tools";
-
-type Skill = {
-  name: string;
-  cat: Category;
-  desc: string;
-  level: number;
-  color: string;
-};
+type Skill = SkillItem;
+type Category = Skill["cat"];
 
 const FILTERS: { id: Category | "all"; label: string }[] = [
   { id: "all", label: "ALL" },
@@ -80,11 +68,12 @@ function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean
   );
 }
 
-export function Skills() {
+export function Skills({ items }: { items?: SkillItem[] }) {
   const [active, setActive] = useState<Category | "all">("all");
   const reduce = useReducedMotion();
-  const filtered = active === "all" ? SKILLS : SKILLS.filter((s) => s.cat === active);
-  const tickerItems = SKILLS.map((s) => s.name.toUpperCase());
+  const all = items?.length ? items : SKILLS;
+  const filtered = active === "all" ? all : all.filter((s) => s.cat === active);
+  const tickerItems = all.map((s) => s.name.toUpperCase());
 
   return (
     <section id="skills" className="w-full border-t-2 border-ink/10 py-20 md:py-28">

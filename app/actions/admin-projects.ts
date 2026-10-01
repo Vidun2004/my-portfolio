@@ -22,6 +22,7 @@ const projectSchema = z.object({
   architecture: z.string().trim().default(""),
   challenges: z.string().trim().default(""),
   lessons: z.string().trim().default(""),
+  features_raw: z.string().default(""),
   hero_image_url: urlOrEmpty.default(""),
   github_url: urlOrEmpty.default(""),
   live_url: urlOrEmpty.default(""),
@@ -45,6 +46,7 @@ function parseForm(formData: FormData) {
     architecture: formData.get("architecture") ?? "",
     challenges: formData.get("challenges") ?? "",
     lessons: formData.get("lessons") ?? "",
+    features_raw: formData.get("features_raw") ?? "",
     hero_image_url: formData.get("hero_image_url") ?? "",
     github_url: formData.get("github_url") ?? "",
     live_url: formData.get("live_url") ?? "",
@@ -66,7 +68,11 @@ export async function createProject(
   const user = await requireAdmin();
   const parsed = parseForm(formData);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
-  const { technology_ids, ...fields } = parsed.data;
+  const { technology_ids, features_raw, ...fields } = parsed.data;
+  const features = String(features_raw ?? "")
+    .split("\n")
+    .map((f) => f.trim())
+    .filter(Boolean);
   const admin = createAdminClient();
 
   const { data, error } = await admin
@@ -82,6 +88,7 @@ export async function createProject(
       architecture: fields.architecture,
       challenges: fields.challenges,
       lessons: fields.lessons,
+      features,
       hero_image_url: emptyToNull(fields.hero_image_url),
       github_url: emptyToNull(fields.github_url),
       live_url: emptyToNull(fields.live_url),
@@ -118,7 +125,11 @@ export async function updateProject(
   const user = await requireAdmin();
   const parsed = parseForm(formData);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
-  const { technology_ids, ...fields } = parsed.data;
+  const { technology_ids, features_raw, ...fields } = parsed.data;
+  const features = String(features_raw ?? "")
+    .split("\n")
+    .map((f) => f.trim())
+    .filter(Boolean);
   const admin = createAdminClient();
 
   const { data, error } = await admin
@@ -134,6 +145,7 @@ export async function updateProject(
       architecture: fields.architecture,
       challenges: fields.challenges,
       lessons: fields.lessons,
+      features,
       hero_image_url: emptyToNull(fields.hero_image_url),
       github_url: emptyToNull(fields.github_url),
       live_url: emptyToNull(fields.live_url),

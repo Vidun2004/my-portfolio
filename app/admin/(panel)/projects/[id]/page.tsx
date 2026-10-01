@@ -39,6 +39,7 @@ export default async function EditProjectPage({
             architecture: project.architecture ?? "",
             challenges: project.challenges ?? "",
             lessons: project.lessons ?? "",
+            features_raw: (project.features ?? []).join("\n"),
             hero_image_url: project.hero_image_url ?? "",
             github_url: project.github_url ?? "",
             live_url: project.live_url ?? "",

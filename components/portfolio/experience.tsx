@@ -6,10 +6,11 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { Reveal } from "@/components/animation/reveal";
 import { Badge } from "@/components/ui/badge";
+import type { JourneyStep } from "@/lib/content";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const STEPS = [
+const STEPS: JourneyStep[] = [
   {
     year: "2026",
     role: "IT JUNIOR EXECUTIVE",
@@ -33,9 +34,10 @@ const STEPS = [
   },
 ];
 
-export function Experience() {
+export function Experience({ steps }: { steps?: JourneyStep[] }) {
   const listRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLSpanElement>(null);
+  const items = steps?.length ? steps : STEPS;
 
   useGSAP(
     () => {
@@ -75,7 +77,7 @@ export function Experience() {
           <span aria-hidden className="absolute top-0 bottom-0 left-[-2px] w-[2px]">
             <span ref={progressRef} className="bg-ink block h-full w-full origin-top scale-y-0" />
           </span>
-          {STEPS.map((s, i) => (
+          {items.map((s, i) => (
             <Reveal key={s.year} delay={i * 0.1} className="relative pb-10 last:pb-0">
               <span
                 className="absolute top-1 -left-8 flex size-4 -translate-x-[9px] items-center justify-center rounded-full border-2 border-ink bg-cream md:-left-8"
