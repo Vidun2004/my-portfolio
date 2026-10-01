@@ -69,10 +69,12 @@ export function ProjectEditor({
   id,
   initial = EMPTY,
   technologies,
+  onSuccess,
 }: {
   id?: string;
   initial?: EditorInitial;
   technologies: EditorTech[];
+  onSuccess?: () => void;
 }) {
   const router = useRouter();
   const action = id ? updateProject.bind(null, id) : createProject;
@@ -84,10 +86,13 @@ export function ProjectEditor({
 
   useEffect(() => {
     if (submitted && state.ok && !pending) {
-      router.push("/admin/projects");
-      router.refresh();
+      if (onSuccess) onSuccess();
+      else {
+        router.push("/admin/projects");
+        router.refresh();
+      }
     }
-  }, [submitted, state, pending, router]);
+  }, [submitted, state, pending, router, onSuccess]);
 
   return (
     <form action={formAction} onSubmit={() => setSubmitted(true)} className="space-y-5">

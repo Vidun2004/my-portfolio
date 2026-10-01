@@ -19,7 +19,7 @@ export type SkillInitial = {
   sort_order: number;
 };
 
-export function SkillEditor({ id, initial }: { id?: string; initial?: SkillInitial }) {
+export function SkillEditor({ id, initial, onSuccess }: { id?: string; initial?: SkillInitial; onSuccess?: () => void }) {
   const router = useRouter();
   const action = id ? updateSkill.bind(null, id) : createSkill;
   const [submitted, setSubmitted] = useState(false);
@@ -27,10 +27,13 @@ export function SkillEditor({ id, initial }: { id?: string; initial?: SkillIniti
 
   useEffect(() => {
     if (submitted && state.ok && !pending) {
-      router.push("/admin/skills");
-      router.refresh();
+      if (onSuccess) onSuccess();
+      else {
+        router.push("/admin/skills");
+        router.refresh();
+      }
     }
-  }, [submitted, state, pending, router]);
+  }, [submitted, state, pending, router, onSuccess]);
 
   return (
     <form action={formAction} onSubmit={() => setSubmitted(true)} className="space-y-5">

@@ -19,7 +19,7 @@ export type ExpInitial = {
   sort_order: number;
 };
 
-export function ExperienceEditor({ id, initial }: { id?: string; initial?: ExpInitial }) {
+export function ExperienceEditor({ id, initial, onSuccess }: { id?: string; initial?: ExpInitial; onSuccess?: () => void }) {
   const router = useRouter();
   const action = id ? updateExperience.bind(null, id) : createExperience;
   const [submitted, setSubmitted] = useState(false);
@@ -27,10 +27,13 @@ export function ExperienceEditor({ id, initial }: { id?: string; initial?: ExpIn
 
   useEffect(() => {
     if (submitted && state.ok && !pending) {
-      router.push("/admin/experience");
-      router.refresh();
+      if (onSuccess) onSuccess();
+      else {
+        router.push("/admin/experience");
+        router.refresh();
+      }
     }
-  }, [submitted, state, pending, router]);
+  }, [submitted, state, pending, router, onSuccess]);
 
   return (
     <form action={formAction} onSubmit={() => setSubmitted(true)} className="space-y-5">
