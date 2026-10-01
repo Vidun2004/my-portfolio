@@ -64,18 +64,18 @@
   --shadow: var(--shadow);
   @keyframes marquee {
     0% {
-      transform: translateX(0%);
+      transform: translateX(0);
     }
     100% {
-      transform: translateX(-100%);
+      transform: translateX(-50%);
     }
   }
   @keyframes marquee2 {
     0% {
-      transform: translateX(100%);
+      transform: translateX(-50%);
     }
     100% {
-      transform: translateX(0%);
+      transform: translateX(0);
     }
   }
 }
