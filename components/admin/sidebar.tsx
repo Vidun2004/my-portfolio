@@ -7,9 +7,9 @@ import { createClient } from "@/lib/supabase/client";
 const NAV = [
   { label: "DASHBOARD", href: "/admin", ready: true },
   { label: "PROJECTS", href: "/admin/projects", ready: true },
-  { label: "SKILLS", href: "/admin/skills", ready: false },
-  { label: "EXPERIENCE", href: "/admin/experience", ready: false },
-  { label: "MESSAGES", href: "/admin/messages", ready: false },
+  { label: "SKILLS", href: "/admin/skills", ready: true },
+  { label: "EXPERIENCE", href: "/admin/experience", ready: true },
+  { label: "MESSAGES", href: "/admin/messages", ready: true },
 ];
 
 export function AdminSidebar({ email }: { email?: string }) {
