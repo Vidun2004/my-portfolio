@@ -24,6 +24,17 @@ export async function generateMetadata({
   return {
     title: `${p.title} — Vidun`,
     description: p.tagline,
+    alternates: { canonical: `/projects/${slug}` },
+    openGraph: {
+      title: `${p.title} — Vidun`,
+      description: p.tagline,
+      url: `/projects/${slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${p.title} — Vidun`,
+      description: p.tagline,
+    },
   };
 }
 
