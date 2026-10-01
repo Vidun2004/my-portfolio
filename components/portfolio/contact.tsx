@@ -5,6 +5,7 @@ import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { submitContact } from "@/app/actions/contact";
 import { Reveal } from "@/components/animation/reveal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ type Form = z.infer<typeof schema>;
 
 export function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -27,9 +29,15 @@ export function Contact() {
     formState: { errors },
   } = useForm<Form>({ resolver: zodResolver(schema) });
 
-  async function onSubmit(_data: Form) {
+  async function onSubmit(data: Form) {
     setStatus("sending");
-    await new Promise((r) => setTimeout(r, 1200)); // backend comes later
+    setServerError(null);
+    const res = await submitContact({ ...data, website: "" });
+    if (!res.ok) {
+      setStatus("idle");
+      setServerError(res.error);
+      return;
+    }
     setStatus("sent");
     reset();
     setTimeout(() => setStatus("idle"), 3000);
@@ -73,6 +81,8 @@ export function Contact() {
             <label className="mt-5 block font-mono text-xs font-bold">MESSAGE</label>
             <Textarea {...register("message")} placeholder="Tell me about your idea…" rows={5} className="mt-1.5" />
             {errors.message && <p className="mt-1 font-mono text-xs text-red-600">{errors.message.message}</p>}
+
+            {serverError && <p className="mt-3 font-mono text-xs text-red-600">{serverError}</p>}
 
             <Button type="submit" size="lg" disabled={status !== "idle"} className="mt-6 w-full font-mono">
               {status === "idle" && <>SEND MESSAGE <ArrowRight size={18} /></>}
