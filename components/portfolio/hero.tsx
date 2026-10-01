@@ -1,6 +1,12 @@
 "use client";
 
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
 import type { MouseEvent } from "react";
@@ -52,7 +58,7 @@ export function Hero() {
       ref={ref}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="relative flex min-h-[100svh] w-full items-center overflow-hidden pt-28 pb-16 md:pt-32"
+      className="relative flex min-h-svh w-full items-center overflow-hidden pt-28 pb-16 md:pt-32"
     >
       {/* subtle full-screen background decor */}
       <div
@@ -61,7 +67,7 @@ export function Hero() {
       />
       <div
         aria-hidden
-        className="border-ink bg-brand-pink/20 absolute bottom-10 -right-16 size-56 rounded-full border-2"
+        className="border-ink bg-brand-pink/20 absolute -right-16 bottom-10 size-56 rounded-full border-2"
       />
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 md:grid-cols-2 md:px-10">
         {/* Left */}
@@ -88,9 +94,12 @@ export function Hero() {
             <br />
             that works.
           </motion.h1>
-          <motion.p {...enter(0.45)} className="mt-6 max-w-md text-base md:text-lg">
-            Software Engineering student building web applications, mobile
-            apps, systems and experimental products.
+          <motion.p
+            {...enter(0.45)}
+            className="mt-6 max-w-md text-base md:text-lg"
+          >
+            Software Engineering student building web applications, mobile apps,
+            systems and experimental products.
           </motion.p>
           <motion.div {...enter(0.55)} className="mt-8 flex flex-wrap gap-4">
             <a href="#projects">
@@ -135,7 +144,7 @@ export function Hero() {
                   <span className="size-2.5 rounded-full bg-green-400" />
                 </span>
               </div>
-              <div className="flex min-h-[320px] flex-col items-start justify-end gap-2 bg-white p-6">
+              <div className="flex min-h-80 flex-col items-start justify-end gap-2 bg-white p-6">
                 <p className="font-mono text-xs text-black/50">
                   {"// profile.tsx"}
                 </p>
@@ -149,7 +158,7 @@ export function Hero() {
                   {["TypeScript", "Next.js", "Supabase"].map((t) => (
                     <span
                       key={t}
-                      className="border-ink rounded-full border-2 bg-cream px-3 py-1 font-mono text-xs font-bold"
+                      className="border-ink bg-cream rounded-full border-2 px-3 py-1 font-mono text-xs font-bold"
                     >
                       {t}
                     </span>
@@ -176,7 +185,7 @@ export function Hero() {
             className="absolute -bottom-6 left-8"
           >
             <Floating distance={7} duration={3} delay={0.8}>
-              <div className="border-ink bg-white shadow-brutal rounded-brutal-md border-2 px-3 py-1.5 font-mono text-xs font-bold">
+              <div className="border-ink shadow-brutal rounded-brutal-md border-2 bg-white px-3 py-1.5 font-mono text-xs font-bold">
                 git • API • DB
               </div>
             </Floating>
@@ -194,7 +203,7 @@ export function Hero() {
 
           {/* Status pill */}
           <Floating
-            className="absolute -bottom-4 right-4"
+            className="absolute right-4 -bottom-4"
             distance={6}
             duration={2.8}
             delay={1}
