@@ -1,56 +1,11 @@
 "use client";
 
 import { ArrowRight, ArrowUpRight, ExternalLink } from "lucide-react";
+import { PROJECTS } from "@/lib/projects";
 import { Reveal } from "@/components/animation/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-type Project = {
-  slug: string;
-  title: string;
-  desc: string;
-  tech: string[];
-  color: string;
-  visual: string;
-  featured?: boolean;
-};
-
-const PROJECTS: Project[] = [
-  {
-    slug: "auditflow",
-    title: "AUDITFLOW",
-    desc: "Compliance management platform — audits, evidence and workflows in one place.",
-    tech: ["Next.js", "Prisma", "PostgreSQL", "Supabase"],
-    color: "bg-brand-blue",
-    visual: "{ audit }",
-    featured: true,
-  },
-  {
-    slug: "creasy-eco",
-    title: "CREASY ECO",
-    desc: "Marketplace experiment for sustainable local products.",
-    tech: ["React", "Node.js", "PostgreSQL"],
-    color: "bg-brand-teal",
-    visual: "< shop />",
-  },
-  {
-    slug: "otflow",
-    title: "OTFLOW",
-    desc: "Overtime tracking for operations teams.",
-    tech: ["Next.js", "Supabase"],
-    color: "bg-brand-yellow",
-    visual: "[ shifts ]",
-  },
-  {
-    slug: "pixel-quest",
-    title: "PIXEL QUEST",
-    desc: "Tiny game prototype — player systems and world events.",
-    tech: ["C#", "Unity"],
-    color: "bg-brand-pink",
-    visual: "► play",
-  },
-];
 
 function TechRow({ tech }: { tech: string[] }) {
   return (
