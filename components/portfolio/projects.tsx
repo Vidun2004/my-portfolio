@@ -1,11 +1,17 @@
 "use client";
 
 import { ArrowRight, ArrowUpRight, ExternalLink } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
 import { PROJECTS } from "@/lib/projects";
 import { Reveal } from "@/components/animation/reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 function TechRow({ tech }: { tech: string[] }) {
   return (
@@ -21,8 +27,32 @@ function TechRow({ tech }: { tech: string[] }) {
 
 export function Projects() {
   const [featured, ...rest] = PROJECTS;
+  const sectionRef = useRef<HTMLElement>(null);
+  const visualRef = useRef<HTMLSpanElement>(null);
+
+  useGSAP(
+    () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      gsap.fromTo(
+        visualRef.current,
+        { yPercent: -8 },
+        {
+          yPercent: 8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.8,
+          },
+        },
+      );
+    },
+    { scope: sectionRef },
+  );
+
   return (
-    <section id="projects" className="w-full border-t-2 border-ink/10 py-20 md:py-28">
+    <section ref={sectionRef} id="projects" className="w-full border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
         <Reveal className="max-w-2xl">
           <p className="font-mono text-sm text-black/50">
@@ -39,8 +69,8 @@ export function Projects() {
             href={`/projects/${featured.slug}`}
             className="border-ink bg-white shadow-brutal rounded-brutal-lg group mt-12 block overflow-hidden border-2 transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg"
           >
-            <div className={cn("flex min-h-[280px] items-center justify-center border-b-2 border-ink p-10 md:min-h-[360px]", featured.color)}>
-              <span className="font-mono text-4xl font-bold transition-transform duration-500 group-hover:scale-[1.03] md:text-6xl">
+            <div className={cn("flex min-h-[280px] items-center justify-center overflow-hidden border-b-2 border-ink p-10 md:min-h-[360px]", featured.color)}>
+              <span ref={visualRef} className="font-mono text-4xl font-bold transition-transform duration-500 group-hover:scale-[1.03] md:text-6xl">
                 {featured.visual}
               </span>
             </div>

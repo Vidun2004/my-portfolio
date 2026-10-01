@@ -1,7 +1,13 @@
 "use client";
 
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
 import { Reveal } from "@/components/animation/reveal";
 import { Badge } from "@/components/ui/badge";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const STEPS = [
   {
@@ -28,6 +34,30 @@ const STEPS = [
 ];
 
 export function Experience() {
+  const listRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLSpanElement>(null);
+
+  useGSAP(
+    () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      gsap.fromTo(
+        progressRef.current,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: listRef.current,
+            start: "top 75%",
+            end: "bottom 60%",
+            scrub: 0.6,
+          },
+        },
+      );
+    },
+    { scope: listRef },
+  );
+
   return (
     <section id="experience" className="w-full border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
@@ -40,7 +70,11 @@ export function Experience() {
           </h2>
         </Reveal>
 
-        <div className="relative mt-12 ml-2 border-l-2 border-ink pl-8 md:ml-6">
+        <div ref={listRef} className="relative mt-12 ml-2 border-l-2 border-ink/15 pl-8 md:ml-6">
+          {/* scroll-driven growth line */}
+          <span aria-hidden className="absolute top-0 bottom-0 left-[-2px] w-[2px]">
+            <span ref={progressRef} className="bg-ink block h-full w-full origin-top scale-y-0" />
+          </span>
           {STEPS.map((s, i) => (
             <Reveal key={s.year} delay={i * 0.1} className="relative pb-10 last:pb-0">
               <span
