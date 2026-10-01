@@ -10,6 +10,8 @@ const NAV = [
   { label: "SKILLS", href: "/admin/skills", ready: true },
   { label: "EXPERIENCE", href: "/admin/experience", ready: true },
   { label: "MESSAGES", href: "/admin/messages", ready: true },
+  { label: "MEDIA", href: "/admin/media", ready: true },
+  { label: "ACTIVITY", href: "/admin/activity", ready: true },
 ];
 
 export function AdminSidebar({ email }: { email?: string }) {
