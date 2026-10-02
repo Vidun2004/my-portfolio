@@ -21,7 +21,7 @@ export default async function Home() {
     getPublicExperience(),
   ]);
   return (
-    <div className="bg-cream text-ink relative min-h-screen overflow-x-clip">
+    <div className="bg-cream text-ink relative min-h-screen overflow-x-clip lg:pl-20">
       <Navbar />
       <ScrollDots />
       <main className="w-full">

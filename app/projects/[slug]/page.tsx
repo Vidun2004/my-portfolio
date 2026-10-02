@@ -60,7 +60,7 @@ export default async function ProjectPage({
   if (!p) notFound();
 
   return (
-    <div className="bg-cream text-ink min-h-screen">
+    <div className="bg-cream text-ink min-h-screen lg:pl-20">
       <Navbar />
       <main className="mx-auto w-full max-w-5xl px-6 pt-32 pb-20 md:px-10">
         <Link href="/#projects" className="inline-flex items-center gap-1 font-mono text-sm font-bold hover:underline">
