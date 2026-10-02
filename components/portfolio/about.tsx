@@ -1,37 +1,92 @@
 "use client";
 
-import { MapPin, GraduationCap, Coffee } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useInView, useReducedMotion } from "motion/react";
 import { Reveal } from "@/components/animation/reveal";
-import { Floating } from "@/components/animation/floating";
 import { cn } from "@/lib/utils";
 
+type Line =
+  | { kind: "cmd"; text: string }
+  | { kind: "out"; text: string }
+  | { kind: "chips"; items: string[] };
+
+const SCRIPT: Line[] = [
+  { kind: "cmd", text: "whoami" },
+  { kind: "out", text: "vidun — software engineering student. human. ships software." },
+  { kind: "cmd", text: "cat currently.txt" },
+  { kind: "out", text: "BUILDING  → production applications" },
+  { kind: "out", text: "LEARNING  → AI · systems · game dev" },
+  { kind: "cmd", text: "cat likes.txt" },
+  { kind: "chips", items: ["clean architecture", "good ux", "automation"] },
+  { kind: "cmd", text: "status" },
+  { kind: "out", text: "● open to work — hello@vidun.dev" },
+];
+
+function useTypedLines(active: boolean, instant: boolean) {
+  const [done, setDone] = useState(0); // fully rendered lines
+  const [chars, setChars] = useState(0); // chars of current cmd line
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    if (!active) return;
+    if (instant) {
+      setDone(SCRIPT.length);
+      return;
+    }
+    let line = 0;
+    let char = 0;
+    function step() {
+      const current = SCRIPT[line];
+      if (!current) {
+        setDone(SCRIPT.length);
+        return;
+      }
+      if (current.kind === "cmd") {
+        if (char <= current.text.length) {
+          setChars(char);
+          char += 1;
+          timers.current.push(setTimeout(step, 42));
+        } else {
+          line += 1;
+          char = 0;
+          setDone(line);
+          timers.current.push(setTimeout(step, 260));
+        }
+      } else {
+        line += 1;
+        char = 0;
+        setChars(0);
+        setDone(line);
+        timers.current.push(setTimeout(step, 320));
+      }
+    }
+    timers.current.push(setTimeout(step, 500));
+    return () => {
+      timers.current.forEach(clearTimeout);
+      timers.current = [];
+    };
+  }, [active, instant]);
+
+  return { done, chars };
+}
+
 const MINI = [
-  {
-    label: "CURRENTLY BUILDING",
-    body: "Production applications",
-    color: "bg-brand-blue",
-    tilt: "rotate-1",
-  },
-  {
-    label: "EXPLORING",
-    body: "AI • Systems • Game Dev",
-    color: "bg-brand-teal",
-    tilt: "-rotate-1",
-  },
-  {
-    label: "I LIKE",
-    body: "Clean architecture • Good UX • Automation",
-    color: "bg-brand-yellow",
-    tilt: "rotate-2",
-  },
+  { label: "CURRENTLY BUILDING", body: "Production applications", color: "bg-brand-blue", tilt: "rotate-1" },
+  { label: "EXPLORING", body: "AI • Systems • Game Dev", color: "bg-brand-teal", tilt: "-rotate-1" },
+  { label: "I LIKE", body: "Clean architecture • Good UX • Automation", color: "bg-brand-yellow", tilt: "rotate-2" },
 ];
 
 export function About() {
+  const termRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(termRef, { once: true, margin: "-120px" });
+  const reduce = useReducedMotion();
+  const { done, chars } = useTypedLines(inView, !!reduce);
+
+  const visible = SCRIPT.slice(0, done);
+  const typing = !reduce && done < SCRIPT.length ? SCRIPT[done] : null;
+
   return (
-    <section
-      id="about"
-      className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28"
-    >
+    <section id="about" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
         <Reveal className="max-w-2xl">
           <p className="font-mono text-sm text-black/50">
@@ -44,92 +99,73 @@ export function About() {
           </h2>
         </Reveal>
 
-        <div className="mt-12 grid items-start gap-10 md:grid-cols-2">
-          {/* Left visual */}
-          <Reveal delay={0.1}>
-            <div className="relative mx-auto w-full max-w-md">
-              <div className="border-ink bg-white shadow-brutal-lg rounded-brutal-lg overflow-hidden border-2">
-                <div className="bg-ink text-cream flex items-center justify-between px-4 py-2 font-mono text-xs">
-                  <span>profile.png</span>
-                  <span className="flex gap-1.5">
-                    <span className="size-2.5 rounded-full bg-red-400" />
-                    <span className="size-2.5 rounded-full bg-yellow-400" />
-                    <span className="size-2.5 rounded-full bg-green-400" />
-                  </span>
-                </div>
-                <div className="bg-brand-pink flex min-h-[340px] flex-col items-center justify-center gap-3 p-8 text-center">
-                  <div className="border-ink bg-cream flex size-28 items-center justify-center rounded-full border-2 font-mono text-4xl font-bold">
-                    V
-                  </div>
-                  <p className="font-mono text-sm font-bold">
-                    {"<Software Engineer />"}
-                  </p>
-                  <p className="flex items-center gap-1 font-mono text-xs text-black/60">
-                    <MapPin size={14} /> Sri Lanka • open to work
-                  </p>
-                </div>
-              </div>
-
-              <Floating
-                className="absolute -top-5 -left-3 md:-left-8"
-                distance={8}
-                duration={3.4}
-              >
-                <div className="border-ink bg-brand-yellow shadow-brutal rounded-brutal-md border-2 px-3 py-1.5 font-mono text-xs font-bold">
-                  CURRENTLY BUILDING
-                </div>
-              </Floating>
-              <Floating
-                className="absolute -right-3 -bottom-5 md:-right-6"
-                distance={7}
-                duration={3}
-                delay={0.6}
-              >
-                <div className="border-ink bg-brand-teal shadow-brutal rounded-brutal-md border-2 px-3 py-1.5 font-mono text-xs font-bold">
-                  ALWAYS LEARNING
-                </div>
-              </Floating>
+        <Reveal delay={0.1}>
+          <div ref={termRef} className="border-ink bg-ink shadow-brutal-lg rounded-brutal-lg mx-auto mt-10 max-w-3xl overflow-hidden border-2">
+            <div className="flex items-center justify-between border-b border-white/15 px-4 py-2.5">
+              <span className="font-mono text-xs text-white/60">vidun@dev:~</span>
+              <span className="flex gap-1.5">
+                <span className="size-2.5 rounded-full bg-red-400" />
+                <span className="size-2.5 rounded-full bg-yellow-400" />
+                <span className="size-2.5 rounded-full bg-green-400" />
+              </span>
             </div>
-          </Reveal>
-
-          {/* Right copy */}
-          <div>
-            <Reveal delay={0.15}>
-              <h3 className="text-2xl font-bold">WHO AM I?</h3>
-              <p className="mt-4 text-base leading-relaxed text-black/80 md:text-lg">
-                I&apos;m Vidun — a Software Engineering student who enjoys
-                figuring out how things work under the hood, from frontend
-                interactions to servers and databases.
-              </p>
-              <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-black/60">
-                <span className="flex items-center gap-1">
-                  <GraduationCap size={14} /> Software Engineering
-                </span>
-                <span className="flex items-center gap-1">
-                  <Coffee size={14} /> fueled by curiosity
-                </span>
-              </p>
-            </Reveal>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
-              {MINI.map((m, i) => (
-                <Reveal key={m.label} delay={0.2 + i * 0.08}>
-                  <div
-                    className={cn(
-                      "border-ink shadow-brutal rounded-brutal-md border-2 p-4 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg",
-                      m.color,
-                      m.tilt,
-                    )}
-                  >
-                    <p className="font-mono text-[11px] font-bold tracking-wide">
-                      {m.label}
+            <div className="text-cream min-h-72 p-5 font-mono text-sm leading-relaxed md:min-h-64 md:text-base">
+              {visible.map((l, i) => {
+                if (l.kind === "cmd") {
+                  return (
+                    <p key={i}>
+                      <span className="text-brand-teal">$ </span>
+                      {l.text}
                     </p>
-                    <p className="mt-2 text-sm font-bold">{m.body}</p>
-                  </div>
-                </Reveal>
-              ))}
+                  );
+                }
+                if (l.kind === "chips") {
+                  return (
+                    <div key={i} className="flex flex-wrap gap-2 py-1">
+                      {l.items.map((c) => (
+                        <span key={c} className="rounded-full border border-white/25 bg-white/10 px-3 py-0.5 text-xs">
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  );
+                }
+                return (
+                  <p key={i} className="text-white/80">
+                    {l.text.startsWith("●") ? (
+                      <span className="text-success">{l.text}</span>
+                    ) : (
+                      l.text
+                    )}
+                  </p>
+                );
+              })}
+              {typing && typing.kind === "cmd" && (
+                <p>
+                  <span className="text-brand-teal">$ </span>
+                  {typing.text.slice(0, chars)}
+                  <span className="ml-0.5 inline-block h-4 w-2.5 animate-pulse bg-brand-yellow align-middle" />
+                </p>
+              )}
+              {(!typing || reduce) && (
+                <p>
+                  <span className="text-brand-teal">$ </span>
+                  <span className="ml-0.5 inline-block h-4 w-2.5 animate-pulse bg-brand-yellow align-middle" />
+                </p>
+              )}
             </div>
           </div>
+        </Reveal>
+
+        <div className="mx-auto mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
+          {MINI.map((m, i) => (
+            <Reveal key={m.label} delay={0.15 + i * 0.08}>
+              <div className={cn("border-ink shadow-brutal rounded-brutal-md border-2 p-4 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg", m.color, m.tilt)}>
+                <p className="font-mono text-[11px] font-bold tracking-wide">{m.label}</p>
+                <p className="mt-2 text-sm font-bold">{m.body}</p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
