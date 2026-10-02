@@ -33,6 +33,9 @@ export function Hero() {
   const layer1y = useTransform(sy, [-0.5, 0.5], [-10, 10]);
   const layer2x = useTransform(sx, [-0.5, 0.5], [8, -8]);
   const layer2y = useTransform(sy, [-0.5, 0.5], [6, -6]);
+  // Portrait: follows the mouse directly, no idle float
+  const portraitX = useTransform(sx, [-0.5, 0.5], [-20, 20]);
+  const portraitY = useTransform(sy, [-0.5, 0.5], [-16, 16]);
 
   function onMouseMove(e: MouseEvent) {
     if (reduce || !ref.current) return;
@@ -134,31 +137,11 @@ export function Hero() {
             </Floating>
           </motion.div>
 
-          {/* Main card + portrait — same parallax layer so they move together */}
+          {/* Main card */}
           <motion.div
             style={reduce ? undefined : { x: layer1x, y: layer1y }}
             className="relative"
           >
-            {/* Portrait cutout — pops out of the card, floats like the stickers */}
-            <div className="pointer-events-none absolute -top-28 right-2 z-10 md:-top-36 md:right-8">
-              <Floating distance={10} duration={3.6} delay={0.3} rotate={1.5}>
-                <div className="relative">
-                  <div
-                    aria-hidden
-                    className="border-ink bg-brand-yellow absolute top-8 right-6 z-0 size-60 rounded-full border-2 md:size-80"
-                  />
-                  <Image
-                    src="/me-cutout.webp"
-                    alt="Vidun portrait cutout"
-                    width={520}
-                    height={676}
-                    priority
-                    className="relative z-10 h-80 w-auto object-contain drop-shadow-[6px_6px_0_rgba(23,23,23,0.9)] md:h-[460px]"
-                  />
-                </div>
-              </Floating>
-            </div>
-
             <div className="border-ink bg-brand-pink shadow-brutal-lg rounded-brutal-lg relative overflow-hidden border-2">
               <div className="bg-ink text-cream flex items-center justify-between px-5 py-3 font-mono text-sm">
                 <span>{"{ vidun.dev }"}</span>
@@ -189,6 +172,27 @@ export function Hero() {
                   ))}
                 </div>
               </div>
+            </div>
+          </motion.div>
+
+          {/* Portrait cutout — no idle float, sways with the mouse only */}
+          <motion.div
+            style={reduce ? undefined : { x: portraitX, y: portraitY }}
+            className="pointer-events-none absolute -top-28 right-2 z-10 md:-top-36 md:right-8"
+          >
+            <div className="relative">
+              <div
+                aria-hidden
+                className="border-ink bg-brand-yellow absolute top-8 right-6 z-0 size-60 rounded-full border-2 md:size-80"
+              />
+              <Image
+                src="/me-cutout.webp"
+                alt="Vidun portrait cutout"
+                width={520}
+                height={676}
+                priority
+                className="relative z-10 h-80 w-auto object-contain drop-shadow-[6px_6px_0_rgba(23,23,23,0.9)] md:h-[460px]"
+              />
             </div>
           </motion.div>
 
