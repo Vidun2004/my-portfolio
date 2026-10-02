@@ -175,14 +175,13 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Portrait — centered, emerging from behind the card.
-              Bottom is clipped by the card; sways with the mouse only. */}
-          <div className="pointer-events-none absolute inset-x-0 -top-36 z-0 flex justify-center md:-top-72">
+          {/* Portrait — in front of the card, like the card is showing you */}
+          <div className="pointer-events-none absolute inset-x-0 -top-36 z-20 flex justify-center md:-top-56">
             <motion.div style={reduce ? undefined : { x: portraitX, y: portraitY }}>
               <div className="relative flex justify-center">
                 <div
                   aria-hidden
-                  className="border-ink bg-brand-yellow absolute top-1/2 left-1/2 size-60 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 md:size-96"
+                  className="border-ink bg-brand-yellow absolute top-1/2 left-1/2 size-60 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 md:size-80"
                 />
                 <Image
                   src="/me-cutout.webp"
@@ -190,7 +189,7 @@ export function Hero() {
                   width={520}
                   height={676}
                   priority
-                  className="relative z-10 h-72 w-auto object-contain drop-shadow-[6px_6px_0_rgba(23,23,23,0.9)] md:h-[560px]"
+                  className="relative z-10 h-72 w-auto object-contain drop-shadow-[6px_6px_0_rgba(23,23,23,0.9)] md:h-[480px]"
                 />
               </div>
             </motion.div>
