@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import "lenis/dist/lenis.css";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
+import { SmoothScroll } from "@/components/animation/smooth-scroll";
 
 const sans = Space_Grotesk({
   subsets: ["latin"],
@@ -68,7 +70,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );
