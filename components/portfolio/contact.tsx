@@ -44,7 +44,7 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="w-full border-t-2 border-ink/10 py-20 md:py-28">
+    <section id="contact" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto grid w-full max-w-7xl items-start gap-10 px-6 md:grid-cols-2 md:px-10">
         <Reveal>
           <p className="font-mono text-sm text-black/50">

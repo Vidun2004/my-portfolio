@@ -55,7 +55,7 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
   );
 
   return (
-    <section ref={sectionRef} id="projects" className="w-full border-t-2 border-ink/10 py-20 md:py-28">
+    <section ref={sectionRef} id="projects" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
         <Reveal className="max-w-2xl">
           <p className="font-mono text-sm text-black/50">

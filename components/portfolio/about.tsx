@@ -30,7 +30,7 @@ export function About() {
   return (
     <section
       id="about"
-      className="w-full border-t-2 border-ink/10 py-20 md:py-28"
+      className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28"
     >
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
         <Reveal className="max-w-2xl">

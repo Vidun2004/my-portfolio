@@ -78,7 +78,7 @@ const CARDS = [
 
 export function Capabilities() {
   return (
-    <section id="build" className="w-full border-t-2 border-ink/10 py-20 md:py-28">
+    <section id="build" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
         <Reveal className="text-center">
           <p className="font-mono text-sm text-black/50">

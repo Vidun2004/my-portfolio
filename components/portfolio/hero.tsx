@@ -151,10 +151,7 @@ export function Hero() {
                   <span className="size-3 rounded-full bg-green-400" />
                 </span>
               </div>
-              <div className="flex min-h-[380px] flex-col items-start justify-end gap-3 bg-white p-7 md:min-h-[440px] md:p-8">
-                <p className="font-mono text-sm text-black/50">
-                  {"// profile.tsx"}
-                </p>
+              <div className="flex min-h-95 flex-col items-start justify-end gap-3 bg-white p-7 md:min-h-110 md:p-8">
                 <p className="font-mono text-3xl font-bold md:text-4xl">
                   {"<Developer />"}
                 </p>
@@ -177,7 +174,9 @@ export function Hero() {
 
           {/* Portrait — in front of the card, like the card is showing you */}
           <div className="pointer-events-none absolute inset-x-0 -top-30 z-20 flex justify-center md:-top-48">
-            <motion.div style={reduce ? undefined : { x: portraitX, y: portraitY }}>
+            <motion.div
+              style={reduce ? undefined : { x: portraitX, y: portraitY }}
+            >
               <div className="relative flex justify-center">
                 <div
                   aria-hidden

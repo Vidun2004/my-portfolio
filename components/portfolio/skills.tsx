@@ -76,7 +76,7 @@ export function Skills({ items }: { items?: SkillItem[] }) {
   const tickerItems = all.map((s) => s.name.toUpperCase());
 
   return (
-    <section id="skills" className="w-full border-t-2 border-ink/10 py-20 md:py-28">
+    <section id="skills" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
         <Reveal className="max-w-2xl">
           <p className="font-mono text-sm text-black/50">
