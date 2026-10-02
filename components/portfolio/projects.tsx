@@ -9,6 +9,7 @@ import { useRef, useState } from "react";
 import { PROJECTS } from "@/lib/projects";
 import type { ProjectCard } from "@/lib/projects";
 import { Reveal } from "@/components/animation/reveal";
+import { TransitionLink } from "@/components/animation/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -150,11 +151,11 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
                 <p className="max-w-md text-black/70">{active.desc}</p>
                 <TechRow tech={active.tech} />
                 <div className="mt-2 flex flex-wrap gap-3">
-                  <a href={`/projects/${active.slug}`} data-cursor="VIEW">
+                  <TransitionLink href={`/projects/${active.slug}`} title={active.title} data-cursor="VIEW">
                     <Button className="font-mono">
                       CASE STUDY <ArrowRight size={16} />
                     </Button>
-                  </a>
+                  </TransitionLink>
                   <a href={`/projects/${active.slug}`}>
                     <Button variant="neutral" className="font-mono">
                       <ArrowUpRight size={16} /> GITHUB

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { Navbar } from "@/components/portfolio/navbar";
 import { Footer } from "@/components/portfolio/footer";
+import { TransitionLink } from "@/components/animation/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PROJECTS } from "@/lib/projects";
@@ -63,9 +63,9 @@ export default async function ProjectPage({
     <div className="bg-cream text-ink min-h-screen lg:pl-20">
       <Navbar />
       <main className="mx-auto w-full max-w-5xl px-6 pt-32 pb-20 md:px-10">
-        <Link href="/#projects" className="inline-flex items-center gap-1 font-mono text-sm font-bold hover:underline">
+        <TransitionLink href="/#projects" title="WORK" className="inline-flex items-center gap-1 font-mono text-sm font-bold hover:underline">
           <ArrowLeft size={16} /> BACK TO WORK
-        </Link>
+        </TransitionLink>
 
         <p className="mt-8 font-mono text-sm text-black/50">{p.tagline}</p>
         <h1 className="mt-2 text-5xl font-bold tracking-tight uppercase md:text-7xl">{p.title}</h1>

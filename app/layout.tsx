@@ -5,6 +5,7 @@ import "./globals.css";
 import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
 import { SmoothScroll } from "@/components/animation/smooth-scroll";
 import { CustomCursor } from "@/components/animation/custom-cursor";
+import { TransitionProvider } from "@/components/animation/page-transition";
 
 const sans = Space_Grotesk({
   subsets: ["latin"],
@@ -71,7 +72,9 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
-        <SmoothScroll>{children}</SmoothScroll>
+        <SmoothScroll>
+          <TransitionProvider>{children}</TransitionProvider>
+        </SmoothScroll>
         <CustomCursor />
       </body>
     </html>
