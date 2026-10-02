@@ -6,6 +6,7 @@ import { Footer } from "@/components/portfolio/footer";
 import { Hero } from "@/components/portfolio/hero";
 import { Navbar } from "@/components/portfolio/navbar";
 import { Projects } from "@/components/portfolio/projects";
+import { ScrollDots } from "@/components/portfolio/scroll-dots";
 import { Skills } from "@/components/portfolio/skills";
 import {
   getPublicExperience,
@@ -22,6 +23,7 @@ export default async function Home() {
   return (
     <div className="bg-cream text-ink relative min-h-screen overflow-x-clip">
       <Navbar />
+      <ScrollDots />
       <main className="w-full">
         <Hero />
         <Capabilities />
