@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowRight, ArrowUpRight, ExternalLink } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { PROJECTS } from "@/lib/projects";
 import type { ProjectCard } from "@/lib/projects";
 import { Reveal } from "@/components/animation/reveal";
@@ -28,8 +29,10 @@ function TechRow({ tech }: { tech: string[] }) {
 
 export function Projects({ items }: { items?: ProjectCard[] }) {
   const list = items?.length ? items : PROJECTS;
-  const featured = list.find((p) => p.featured) ?? list[0];
-  const rest = list.filter((p) => p.slug !== featured.slug);
+  const [slug, setSlug] = useState(list.find((p) => p.featured)?.slug ?? list[0]?.slug);
+  const active = list.find((p) => p.slug === slug) ?? list[0];
+  const reduce = useReducedMotion();
+
   const sectionRef = useRef<HTMLElement>(null);
   const visualRef = useRef<HTMLSpanElement>(null);
 
@@ -54,6 +57,8 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
     { scope: sectionRef },
   );
 
+  if (!active) return null;
+
   return (
     <section ref={sectionRef} id="projects" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
@@ -66,65 +71,79 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
           </h2>
         </Reveal>
 
-        {/* Featured */}
+        {/* Tabs */}
         <Reveal delay={0.1}>
-          <a
-            href={`/projects/${featured.slug}`}
-            data-cursor="VIEW"
-            className="border-ink bg-white shadow-brutal rounded-brutal-lg group mt-12 block overflow-hidden border-2 transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg"
-          >
-            <div className={cn("flex min-h-[280px] items-center justify-center overflow-hidden border-b-2 border-ink p-10 md:min-h-[360px]", featured.color)}>
-              <span ref={visualRef} className="font-mono text-4xl font-bold transition-transform duration-500 group-hover:scale-[1.03] md:text-6xl">
-                {featured.visual}
-              </span>
-            </div>
-            <div className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:p-8">
-              <div>
-                <p className="font-mono text-xs font-bold text-black/40">FEATURED PROJECT</p>
-                <h3 className="mt-1 text-3xl font-bold md:text-4xl">{featured.title}</h3>
-                <p className="mt-2 max-w-xl text-black/70">{featured.desc}</p>
-                <div className="mt-4">
-                  <TechRow tech={featured.tech} />
-                </div>
-              </div>
-              <div className="flex shrink-0 flex-wrap gap-3">
-                <Button className="font-mono">
-                  CASE STUDY <ArrowRight size={16} />
-                </Button>
-                <Button variant="neutral" className="font-mono">
-                  <ArrowUpRight size={16} /> GITHUB
-                </Button>
-              </div>
-            </div>
-          </a>
+          <div className="mt-10 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {list.map((p, i) => (
+              <button
+                key={p.slug}
+                onClick={() => setSlug(p.slug)}
+                className={cn(
+                  "shrink-0 rounded-lg border-2 border-ink px-4 py-2.5 font-mono text-sm font-bold transition-all duration-200",
+                  p.slug === slug
+                    ? "bg-ink text-cream shadow-brutal"
+                    : "bg-white hover:-translate-y-0.5 hover:shadow-brutal",
+                )}
+              >
+                <span className="mr-2 opacity-40">0{i + 1}</span>
+                {p.title}
+              </button>
+            ))}
+          </div>
         </Reveal>
 
-        {/* Grid */}
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {rest.map((p, i) => (
-            <Reveal key={p.slug} delay={0.1 + i * 0.08}>
-              <a
-                href={`/projects/${p.slug}`}
-                data-cursor="VIEW"
-                className="border-ink bg-white shadow-brutal rounded-brutal-md group flex h-full flex-col overflow-hidden border-2 transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg"
-              >
-                <div className={cn("flex h-44 items-center justify-center overflow-hidden border-b-2 border-ink", p.color)}>
-                  <span className="font-mono text-2xl font-bold transition-transform duration-500 group-hover:scale-[1.03]">
-                    {p.visual}
-                  </span>
+        {/* Stage */}
+        <div className="mt-4">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active.slug}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, x: 32 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, x: -24 }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              className="border-ink bg-white shadow-brutal-lg rounded-brutal-lg grid overflow-hidden border-2 md:grid-cols-2"
+            >
+              <div className={cn("flex min-h-64 items-center justify-center overflow-hidden p-10 md:min-h-[420px]", active.color)}>
+                <span ref={visualRef} className="text-center font-mono text-4xl font-bold md:text-6xl">
+                  {active.visual}
+                </span>
+              </div>
+              <div className="flex flex-col justify-center gap-4 p-6 md:p-10">
+                <p className="font-mono text-xs font-bold text-black/40">
+                  {active.featured ? "★ FEATURED PROJECT" : "PROJECT"}
+                </p>
+                <h3 className="text-3xl font-bold tracking-tight md:text-5xl">{active.title}</h3>
+                <p className="max-w-md text-black/70">{active.desc}</p>
+                <TechRow tech={active.tech} />
+                <div className="mt-2 flex flex-wrap gap-3">
+                  <a href={`/projects/${active.slug}`} data-cursor="VIEW">
+                    <Button className="font-mono">
+                      CASE STUDY <ArrowRight size={16} />
+                    </Button>
+                  </a>
+                  <a href={`/projects/${active.slug}`}>
+                    <Button variant="neutral" className="font-mono">
+                      <ArrowUpRight size={16} /> GITHUB
+                    </Button>
+                  </a>
                 </div>
-                <div className="flex flex-1 flex-col p-5">
-                  <h3 className="text-xl font-bold">{p.title}</h3>
-                  <p className="mt-2 flex-1 text-sm text-black/70">{p.desc}</p>
-                  <div className="mt-4">
-                    <TechRow tech={p.tech} />
-                  </div>
-                  <span className="mt-4 flex items-center gap-1 font-mono text-xs font-bold opacity-60 transition-opacity group-hover:opacity-100">
-                    VIEW CASE STUDY <ExternalLink size={14} />
-                  </span>
-                </div>
-              </a>
-            </Reveal>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Dots */}
+        <div className="mt-5 flex justify-center gap-2">
+          {list.map((p) => (
+            <button
+              key={p.slug}
+              onClick={() => setSlug(p.slug)}
+              aria-label={p.title}
+              className={cn(
+                "h-2.5 rounded-full border-2 border-ink transition-all duration-300",
+                p.slug === slug ? "w-8 bg-ink" : "w-2.5 bg-white hover:bg-brand-yellow",
+              )}
+            />
           ))}
         </div>
       </div>
