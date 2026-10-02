@@ -5,7 +5,7 @@ export default async function AdminMessagesPage() {
   const admin = createAdminClient();
   const { data: messages } = await admin
     .from("contact_messages")
-    .select("id, name, email, status, created_at")
+    .select("id, name, email, status, intent, created_at")
     .order("created_at", { ascending: false });
 
   return (
@@ -23,6 +23,7 @@ export default async function AdminMessagesPage() {
             <thead>
               <tr className="border-b-2 border-ink font-mono text-xs">
                 <th className="px-4 py-3">NAME</th>
+                <th className="px-4 py-3">WANTS TO</th>
                 <th className="px-4 py-3">EMAIL</th>
                 <th className="px-4 py-3">STATUS</th>
                 <th className="px-4 py-3 text-right">ACTION</th>
@@ -32,6 +33,7 @@ export default async function AdminMessagesPage() {
               {messages.map((m) => (
                 <tr key={m.id} className="border-b border-ink/10 last:border-0">
                   <td className="px-4 py-3 font-bold">{m.name}</td>
+                  <td className="px-4 py-3 font-mono text-xs uppercase">{(m as { intent?: string }).intent ?? "—"}</td>
                   <td className="px-4 py-3 font-mono text-xs">{m.email}</td>
                   <td className="px-4 py-3">
                     <span className="rounded-full border-2 border-ink bg-cream px-2 py-0.5 font-mono text-[11px] font-bold uppercase">

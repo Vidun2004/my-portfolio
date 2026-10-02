@@ -34,6 +34,10 @@ export default async function MessageDetailPage({ params }: { params: Promise<{ 
           <p className="font-mono text-sm">{m.email}</p>
         </div>
         <div>
+          <p className="font-mono text-xs font-bold text-black/50">WANTS TO</p>
+          <p className="font-mono text-sm uppercase">{(m as { intent?: string }).intent ?? "—"}</p>
+        </div>
+        <div>
           <p className="font-mono text-xs font-bold text-black/50">MESSAGE</p>
           <p className="whitespace-pre-wrap">{m.message}</p>
         </div>
