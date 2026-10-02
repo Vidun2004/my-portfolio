@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -29,9 +29,26 @@ function TechRow({ tech }: { tech: string[] }) {
 
 export function Projects({ items }: { items?: ProjectCard[] }) {
   const list = items?.length ? items : PROJECTS;
+  const lineup = list.slice(0, 4);
   const [slug, setSlug] = useState(list.find((p) => p.featured)?.slug ?? list[0]?.slug);
+  const [dir, setDir] = useState(1);
   const active = list.find((p) => p.slug === slug) ?? list[0];
   const reduce = useReducedMotion();
+
+  function go(delta: 1 | -1) {
+    if (list.length < 2) return;
+    const i = list.findIndex((p) => p.slug === slug);
+    const next = list[(i + delta + list.length) % list.length];
+    setDir(delta);
+    setSlug(next.slug);
+  }
+
+  function pick(next: string) {
+    const a = list.findIndex((p) => p.slug === slug);
+    const b = list.findIndex((p) => p.slug === next);
+    setDir(b > a ? 1 : -1);
+    setSlug(next);
+  }
 
   const sectionRef = useRef<HTMLElement>(null);
   const visualRef = useRef<HTMLSpanElement>(null);
@@ -71,35 +88,52 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
           </h2>
         </Reveal>
 
-        {/* Tabs */}
+        {/* The Lineup: top 4, click to feature */}
         <Reveal delay={0.1}>
-          <div className="mt-10 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {list.map((p, i) => (
+          <div className="mt-10 flex flex-wrap items-center gap-2.5">
+            <span className="border-ink bg-brand-yellow shadow-brutal rounded-brutal-md -rotate-2 border-2 px-3 py-1.5 font-mono text-xs font-bold">
+              ★ THE LINEUP
+            </span>
+            {lineup.map((p, i) => (
               <button
                 key={p.slug}
-                onClick={() => setSlug(p.slug)}
+                onClick={() => pick(p.slug)}
                 className={cn(
-                  "shrink-0 rounded-lg border-2 border-ink px-4 py-2.5 font-mono text-sm font-bold transition-all duration-200",
+                  "rounded-full border-2 border-ink px-4 py-1.5 font-mono text-xs font-bold transition-all duration-200",
                   p.slug === slug
                     ? "bg-ink text-cream shadow-brutal"
                     : "bg-white hover:-translate-y-0.5 hover:shadow-brutal",
                 )}
               >
-                <span className="mr-2 opacity-40">0{i + 1}</span>
+                <span className="mr-1.5 opacity-40">0{i + 1}</span>
                 {p.title}
               </button>
             ))}
           </div>
         </Reveal>
 
-        {/* Stage */}
-        <div className="mt-4">
-          <AnimatePresence mode="wait">
+        {/* Stage with side arrows */}
+        <div className="relative mt-4">
+          <button
+            onClick={() => go(-1)}
+            aria-label="Previous project"
+            className="border-ink bg-white shadow-brutal rounded-full absolute top-1/2 -left-3 z-10 flex size-11 -translate-y-1/2 items-center justify-center border-2 transition-all hover:-translate-x-0.5 hover:shadow-brutal-lg md:-left-6 md:size-13"
+          >
+            <ChevronLeft size={22} strokeWidth={3} />
+          </button>
+          <button
+            onClick={() => go(1)}
+            aria-label="Next project"
+            className="border-ink bg-white shadow-brutal rounded-full absolute top-1/2 -right-3 z-10 flex size-11 -translate-y-1/2 items-center justify-center border-2 transition-all hover:translate-x-0.5 hover:shadow-brutal-lg md:-right-6 md:size-13"
+          >
+            <ChevronRight size={22} strokeWidth={3} />
+          </button>
+          <AnimatePresence mode="wait" custom={dir}>
             <motion.div
               key={active.slug}
-              initial={reduce ? { opacity: 0 } : { opacity: 0, x: 32 }}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, x: 48 * dir }}
               animate={{ opacity: 1, x: 0 }}
-              exit={reduce ? { opacity: 0 } : { opacity: 0, x: -24 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, x: -36 * dir }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className="border-ink bg-white shadow-brutal-lg rounded-brutal-lg grid overflow-hidden border-2 md:grid-cols-2"
             >
@@ -130,21 +164,6 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
               </div>
             </motion.div>
           </AnimatePresence>
-        </div>
-
-        {/* Dots */}
-        <div className="mt-5 flex justify-center gap-2">
-          {list.map((p) => (
-            <button
-              key={p.slug}
-              onClick={() => setSlug(p.slug)}
-              aria-label={p.title}
-              className={cn(
-                "h-2.5 rounded-full border-2 border-ink transition-all duration-300",
-                p.slug === slug ? "w-8 bg-ink" : "w-2.5 bg-white hover:bg-brand-yellow",
-              )}
-            />
-          ))}
         </div>
       </div>
     </section>
