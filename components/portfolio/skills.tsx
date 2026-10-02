@@ -1,8 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Reveal } from "@/components/animation/reveal";
+import { SkillsTank } from "@/components/portfolio/skills-tank";
 import type { SkillItem } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -75,6 +76,16 @@ export function Skills({ items }: { items?: SkillItem[] }) {
   const filtered = active === "all" ? all : all.filter((s) => s.cat === active);
   const tickerItems = all.map((s) => s.name.toUpperCase());
 
+  // physics tank on desktop pointers; static grid otherwise
+  const [tank, setTank] = useState(false);
+  useEffect(() => {
+    setTank(
+      window.matchMedia("(pointer: fine)").matches &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+        window.innerWidth >= 768,
+    );
+  }, []);
+
   return (
     <section id="skills" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
@@ -119,7 +130,10 @@ export function Skills({ items }: { items?: SkillItem[] }) {
           </div>
         </Reveal>
 
-        {/* Grid with layout animation */}
+        {/* Physics tank on desktop, filterable grid otherwise */}
+        {tank ? (
+          <SkillsTank skills={all} active={active} />
+        ) : (
         <motion.div layout className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {filtered.map((s) => (
@@ -151,6 +165,7 @@ export function Skills({ items }: { items?: SkillItem[] }) {
             ))}
           </AnimatePresence>
         </motion.div>
+        )}
       </div>
     </section>
   );
