@@ -8,6 +8,7 @@ import {
   useTransform,
 } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { useRef } from "react";
 import type { MouseEvent } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +70,7 @@ export function Hero() {
         aria-hidden
         className="border-ink bg-brand-pink/20 absolute -right-16 bottom-10 size-56 rounded-full border-2"
       />
-      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 md:grid-cols-2 md:px-10">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 px-6 md:grid-cols-2 md:px-10 lg:gap-20">
         {/* Left */}
         <div>
           <motion.div {...enter(0.2)}>
@@ -80,13 +81,13 @@ export function Hero() {
           </motion.div>
           <motion.p
             {...enter(0.3)}
-            className="mt-6 font-mono text-sm text-black/60"
+            className="mt-6 font-mono text-base text-black/60 md:text-lg"
           >
             Hi, my name is Vidun.
           </motion.p>
           <motion.h1
             {...enter(0.35)}
-            className="mt-2 text-5xl leading-[0.95] font-bold tracking-tight uppercase md:text-7xl"
+            className="mt-2 text-6xl leading-[0.95] font-bold tracking-tight uppercase md:text-8xl"
           >
             I build
             <br />
@@ -96,7 +97,7 @@ export function Hero() {
           </motion.h1>
           <motion.p
             {...enter(0.45)}
-            className="mt-6 max-w-md text-base md:text-lg"
+            className="mt-6 max-w-lg text-lg md:text-xl"
           >
             Software Engineering student building web applications, mobile apps,
             systems and experimental products.
@@ -118,47 +119,70 @@ export function Hero() {
         {/* Right visual composition */}
         <motion.div
           {...enter(0.7)}
-          className="relative mx-auto w-full max-w-md"
+          className="relative mx-auto mt-28 w-full max-w-lg md:mt-24 lg:max-w-xl"
         >
           {/* Name pill — absolute positioning lives on the parallax element itself
               so transform never changes the containing block for children */}
           <motion.div
             style={reduce ? undefined : { x: layer2x, y: layer2y }}
-            className="absolute -top-8 -right-2 z-20 md:-right-8"
+            className="absolute -top-10 -right-2 z-20 md:-right-10"
           >
             <Floating distance={8} duration={3.2}>
-              <div className="border-ink bg-brand-blue shadow-brutal rounded-brutal-md border-2 px-5 py-2 text-2xl font-bold">
+              <div className="border-ink bg-brand-blue shadow-brutal rounded-brutal-md border-2 px-6 py-3 text-3xl font-bold md:text-4xl">
                 Vidun
               </div>
             </Floating>
           </motion.div>
 
-          {/* Main card */}
-          <motion.div style={reduce ? undefined : { x: layer1x, y: layer1y }}>
+          {/* Main card + portrait — same parallax layer so they move together */}
+          <motion.div
+            style={reduce ? undefined : { x: layer1x, y: layer1y }}
+            className="relative"
+          >
+            {/* Portrait cutout — pops out of the card, floats like the stickers */}
+            <div className="pointer-events-none absolute -top-28 right-2 z-10 md:-top-36 md:right-8">
+              <Floating distance={10} duration={3.6} delay={0.3} rotate={1.5}>
+                <div className="relative">
+                  <div
+                    aria-hidden
+                    className="border-ink bg-brand-yellow absolute top-8 right-6 z-0 size-60 rounded-full border-2 md:size-80"
+                  />
+                  <Image
+                    src="/me-cutout.webp"
+                    alt="Vidun portrait cutout"
+                    width={520}
+                    height={676}
+                    priority
+                    className="relative z-10 h-80 w-auto object-contain drop-shadow-[6px_6px_0_rgba(23,23,23,0.9)] md:h-[460px]"
+                  />
+                </div>
+              </Floating>
+            </div>
+
             <div className="border-ink bg-brand-pink shadow-brutal-lg rounded-brutal-lg relative overflow-hidden border-2">
-              <div className="bg-ink text-cream flex items-center justify-between px-4 py-2 font-mono text-xs">
+              <div className="bg-ink text-cream flex items-center justify-between px-5 py-3 font-mono text-sm">
                 <span>{"{ vidun.dev }"}</span>
                 <span className="flex gap-1.5">
-                  <span className="size-2.5 rounded-full bg-red-400" />
-                  <span className="size-2.5 rounded-full bg-yellow-400" />
-                  <span className="size-2.5 rounded-full bg-green-400" />
+                  <span className="size-3 rounded-full bg-red-400" />
+                  <span className="size-3 rounded-full bg-yellow-400" />
+                  <span className="size-3 rounded-full bg-green-400" />
                 </span>
               </div>
-              <div className="flex min-h-80 flex-col items-start justify-end gap-2 bg-white p-6">
-                <p className="font-mono text-xs text-black/50">
+              <div className="flex min-h-[380px] flex-col items-start justify-end gap-3 bg-white p-7 md:min-h-[440px] md:p-8">
+                <p className="font-mono text-sm text-black/50">
                   {"// profile.tsx"}
                 </p>
-                <p className="font-mono text-2xl font-bold">
+                <p className="font-mono text-3xl font-bold md:text-4xl">
                   {"<Developer />"}
                 </p>
-                <p className="font-mono text-sm text-black/60">
+                <p className="font-mono text-base text-black/60">
                   web • mobile • systems • games
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {["TypeScript", "Next.js", "Supabase"].map((t) => (
                     <span
                       key={t}
-                      className="border-ink bg-cream rounded-full border-2 px-3 py-1 font-mono text-xs font-bold"
+                      className="border-ink bg-cream rounded-full border-2 px-4 py-1.5 font-mono text-sm font-bold"
                     >
                       {t}
                     </span>
@@ -172,30 +196,30 @@ export function Hero() {
               parallax transform, so hovering never re-parents the layout */}
           <motion.div
             style={reduce ? undefined : { x: layer2x, y: layer2y }}
-            className="absolute top-16 -left-4 md:-left-10"
+            className="absolute top-24 -left-6 md:-left-12"
           >
             <Floating distance={10} duration={4} delay={0.4} rotate={4}>
-              <div className="border-ink bg-brand-teal shadow-brutal rounded-brutal-md flex items-center gap-1 border-2 px-3 py-2 font-mono text-sm font-bold">
+              <div className="border-ink bg-brand-teal shadow-brutal rounded-brutal-md flex items-center gap-1 border-2 px-4 py-2.5 font-mono text-lg font-bold">
                 {"</>"}
               </div>
             </Floating>
           </motion.div>
           <motion.div
             style={reduce ? undefined : { x: layer2x, y: layer2y }}
-            className="absolute -bottom-6 left-8"
+            className="absolute -bottom-7 left-10"
           >
             <Floating distance={7} duration={3} delay={0.8}>
-              <div className="border-ink shadow-brutal rounded-brutal-md border-2 bg-white px-3 py-1.5 font-mono text-xs font-bold">
+              <div className="border-ink shadow-brutal rounded-brutal-md border-2 bg-white px-4 py-2 font-mono text-sm font-bold">
                 git • API • DB
               </div>
             </Floating>
           </motion.div>
           <motion.div
             style={reduce ? undefined : { x: layer2x, y: layer2y }}
-            className="absolute top-1/2 -right-4 md:-right-8"
+            className="absolute top-1/2 -right-6 md:-right-10"
           >
             <Floating distance={9} duration={3.8} delay={0.2} rotate={3}>
-              <div className="border-ink bg-brand-yellow shadow-brutal flex size-14 items-center justify-center rounded-full border-2 font-mono text-lg font-bold">
+              <div className="border-ink bg-brand-yellow shadow-brutal flex size-16 items-center justify-center rounded-full border-2 font-mono text-xl font-bold md:size-20 md:text-2xl">
                 01
               </div>
             </Floating>
@@ -203,12 +227,12 @@ export function Hero() {
 
           {/* Status pill */}
           <Floating
-            className="absolute right-4 -bottom-4"
+            className="absolute right-6 -bottom-5"
             distance={6}
             duration={2.8}
             delay={1}
           >
-            <div className="border-ink bg-success rounded-full border-2 px-3 py-1 font-mono text-xs font-bold">
+            <div className="border-ink bg-success rounded-full border-2 px-4 py-1.5 font-mono text-sm font-bold">
               ● Available for freelance
             </div>
           </Floating>
