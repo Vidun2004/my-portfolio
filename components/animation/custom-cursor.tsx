@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 export function CustomCursor() {
   const [enabled, setEnabled] = useState(false);
   const [label, setLabel] = useState<string | null>(null);
+  const [onDark, setOnDark] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [seen, setSeen] = useState(false);
 
@@ -36,6 +37,7 @@ export function CustomCursor() {
         'a, button, [role="button"], input, textarea, select, [data-cursor]',
       );
       setLabel(t ? t.getAttribute("data-cursor") ?? "" : null);
+      setOnDark(!!(e.target as HTMLElement).closest?.("[data-dark-cursor]"));
     }
     function down() {
       setPressed(true);
@@ -77,8 +79,12 @@ export function CustomCursor() {
       >
         <span
           className={
-            "border-ink flex h-full w-full items-center justify-center rounded-full border-2 font-mono text-[11px] font-bold " +
-            (label || hovering ? "bg-brand-yellow" : "bg-ink")
+            "flex h-full w-full items-center justify-center rounded-full border-2 font-mono text-[11px] font-bold " +
+            (label || hovering
+              ? "border-ink bg-brand-yellow"
+              : onDark
+                ? "border-cream bg-brand-yellow"
+                : "border-ink bg-ink")
           }
         >
           {label}

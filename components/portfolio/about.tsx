@@ -186,6 +186,13 @@ export function About() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [value, setValue] = useState("");
   const [cleared, setCleared] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // keep the latest line in view as the transcript grows
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [done, chars, entries]);
 
   const introDone = done >= SCRIPT.length;
   const visible = cleared ? [] : SCRIPT.slice(0, done);
@@ -229,7 +236,11 @@ export function About() {
                 <span className="size-2.5 rounded-full bg-green-400" />
               </span>
             </div>
-            <div className="text-cream min-h-72 p-5 font-mono text-sm leading-relaxed md:min-h-64 md:text-base">
+            <div
+              ref={scrollRef}
+              data-dark-cursor
+              className="text-cream h-80 overflow-y-auto p-5 font-mono text-sm leading-relaxed md:h-96 md:text-base"
+            >
               {visible.map((l, i) => (
                 <RenderLine key={`s-${i}`} line={l} />
               ))}
