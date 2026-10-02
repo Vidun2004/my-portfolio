@@ -176,7 +176,7 @@ export function Hero() {
           </motion.div>
 
           {/* Portrait — in front of the card, like the card is showing you */}
-          <div className="pointer-events-none absolute inset-x-0 -top-36 z-20 flex justify-center md:-top-56">
+          <div className="pointer-events-none absolute inset-x-0 -top-30 z-20 flex justify-center md:-top-48">
             <motion.div style={reduce ? undefined : { x: portraitX, y: portraitY }}>
               <div className="relative flex justify-center">
                 <div
