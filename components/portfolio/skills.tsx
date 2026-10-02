@@ -1,9 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Reveal } from "@/components/animation/reveal";
-import { SkillsTank } from "@/components/portfolio/skills-tank";
 import type { SkillItem } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +41,8 @@ const SKILLS: Skill[] = [
   { name: "Linux", cat: "tools", desc: "Daily driver + servers.", level: 78, color: "bg-white" },
 ];
 
+const TILTS = ["-rotate-2", "rotate-1", "rotate-2", "-rotate-1"];
+
 function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
   // 4 copies = two identical halves, so -50% translate loops without a jump.
   // No gap on the flex container — trailing space lives inside each item.
@@ -76,30 +77,25 @@ export function Skills({ items }: { items?: SkillItem[] }) {
   const filtered = active === "all" ? all : all.filter((s) => s.cat === active);
   const tickerItems = all.map((s) => s.name.toUpperCase());
 
-  // physics tank on desktop pointers; static grid otherwise
-  const [tank, setTank] = useState(false);
-  useEffect(() => {
-    setTank(
-      window.matchMedia("(pointer: fine)").matches &&
-        !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
-        window.innerWidth >= 768,
-    );
-  }, []);
-
   return (
     <section id="skills" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
-        <Reveal className="max-w-2xl">
-          <p className="font-mono text-sm text-black/50">
-            The tools I use to turn ideas into software.
-          </p>
-          <h2 className="mt-2 text-4xl font-bold tracking-tight uppercase md:text-6xl">
-            My toolbox
-          </h2>
+        <Reveal className="flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-2xl">
+            <p className="font-mono text-sm text-black/50">
+              The tools I use to turn ideas into software.
+            </p>
+            <h2 className="mt-2 text-4xl font-bold tracking-tight uppercase md:text-6xl">
+              My toolbox
+            </h2>
+          </div>
+          <div className="border-ink bg-brand-pink shadow-brutal rounded-brutal-md -rotate-2 border-2 px-4 py-2 font-mono text-sm font-bold">
+            {all.length} STICKERS ✦ COLLECTED
+          </div>
         </Reveal>
       </div>
 
-      {/* Unique tilted marquee tickers */}
+      {/* Tilted marquee tickers */}
       <Reveal delay={0.1} className="mt-10 space-y-3">
         <div className="border-ink bg-brand-yellow -rotate-1 border-y-2 py-2">
           <Ticker items={tickerItems} />
@@ -130,42 +126,52 @@ export function Skills({ items }: { items?: SkillItem[] }) {
           </div>
         </Reveal>
 
-        {/* Physics tank on desktop, filterable grid otherwise */}
-        {tank ? (
-          <SkillsTank skills={all} active={active} />
-        ) : (
-        <motion.div layout className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Sticker wall */}
+        <motion.div layout className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
-            {filtered.map((s) => (
+            {filtered.map((s, i) => (
               <motion.div
                 key={s.name}
                 layout={!reduce}
-                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94 }}
-                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                className="border-ink bg-white shadow-brutal rounded-brutal-md group border-2 p-4 transition-shadow duration-300 hover:shadow-brutal-lg"
+                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9, rotate: -4 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className={cn(
+                  "border-ink shadow-brutal rounded-brutal-md relative border-2 p-5",
+                  "transition-all duration-300 hover:-translate-x-[3px] hover:-translate-y-[3px] hover:rotate-0 hover:shadow-brutal-lg",
+                  s.color,
+                  TILTS[i % TILTS.length],
+                )}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className={cn("rounded border-2 border-ink px-2 py-0.5 font-mono text-xs font-bold", s.color)}>
-                    {s.name.toUpperCase()}
+                {s.level >= 85 && (
+                  <span className="border-ink bg-white absolute -top-3 -right-2 rotate-12 rounded-full border-2 px-2.5 py-0.5 font-mono text-[11px] font-bold shadow-[2px_2px_0_#171717]">
+                    ★ PRO
                   </span>
-                  <span className="font-mono text-[11px] text-black/40 uppercase">
+                )}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-[11px] font-bold tracking-widest uppercase opacity-60">
                     {s.cat}
                   </span>
+                  <span className="border-ink rounded-full border-2 bg-white px-2 py-0.5 font-mono text-[11px] font-bold">
+                    LV {s.level}
+                  </span>
                 </div>
-                <p className="mt-3 text-sm text-black/70">{s.desc}</p>
-                <div className="mt-3 h-3 overflow-hidden rounded-full border-2 border-ink bg-cream">
-                  <div
-                    className={cn("h-full", s.color)}
-                    style={{ width: `${s.level}%` }}
+                <p className="mt-2 text-2xl font-bold tracking-tight">{s.name.toUpperCase()}</p>
+                <p className="mt-1 text-sm font-medium text-black/70">{s.desc}</p>
+                <div className="border-ink mt-4 h-3.5 overflow-hidden rounded-full border-2 bg-white/70">
+                  <motion.div
+                    initial={reduce ? false : { width: 0 }}
+                    whileInView={{ width: `${s.level}%` }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    className="h-full bg-ink"
                   />
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
         </motion.div>
-        )}
       </div>
     </section>
   );
