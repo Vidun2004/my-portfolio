@@ -176,6 +176,13 @@
     font-weight: var(--font-weight-heading);
   }
 }
+/* Custom cursor takes over: hide native pointer, fine pointers only.
+   The class is added by CustomCursor when it activates. */
+.has-custom-cursor,
+.has-custom-cursor * {
+  cursor: none !important;
+}
+
 /* Neobrutalist scrollbar: black bar on white rail */
 html {
   scrollbar-color: #171717 #ffffff;

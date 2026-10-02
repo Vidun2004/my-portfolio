@@ -4,6 +4,7 @@ import "lenis/dist/lenis.css";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
 import { SmoothScroll } from "@/components/animation/smooth-scroll";
+import { CustomCursor } from "@/components/animation/custom-cursor";
 
 const sans = Space_Grotesk({
   subsets: ["latin"],
@@ -71,6 +72,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
         <SmoothScroll>{children}</SmoothScroll>
+        <CustomCursor />
       </body>
     </html>
   );

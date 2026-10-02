@@ -70,6 +70,7 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
         <Reveal delay={0.1}>
           <a
             href={`/projects/${featured.slug}`}
+            data-cursor="VIEW"
             className="border-ink bg-white shadow-brutal rounded-brutal-lg group mt-12 block overflow-hidden border-2 transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg"
           >
             <div className={cn("flex min-h-[280px] items-center justify-center overflow-hidden border-b-2 border-ink p-10 md:min-h-[360px]", featured.color)}>
@@ -104,6 +105,7 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
             <Reveal key={p.slug} delay={0.1 + i * 0.08}>
               <a
                 href={`/projects/${p.slug}`}
+                data-cursor="VIEW"
                 className="border-ink bg-white shadow-brutal rounded-brutal-md group flex h-full flex-col overflow-hidden border-2 transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg"
               >
                 <div className={cn("flex h-44 items-center justify-center overflow-hidden border-b-2 border-ink", p.color)}>
