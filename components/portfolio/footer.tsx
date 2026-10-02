@@ -1,20 +1,31 @@
 import { ArrowUpRight } from "lucide-react";
 
-export function Footer() {
+export function Footer({
+  siteName,
+  email,
+  github,
+  linkedin,
+}: {
+  siteName?: string;
+  email?: string;
+  github?: string;
+  linkedin?: string;
+}) {
+  const mail = email ?? "hello@vidun.dev";
   return (
-    <footer className="border-ink bg-ink text-cream w-full border-t-2">
+    <footer data-dark-cursor className="border-ink bg-ink text-cream w-full border-t-2">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between md:px-10">
         <div>
-          <p className="text-xl font-bold">VIDUN.DEV</p>
+          <p className="text-xl font-bold">{siteName ?? "VIDUN.DEV"}</p>
           <p className="mt-1 font-mono text-xs text-white/60">
             Built with curiosity, TypeScript and too much coffee.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 font-mono text-xs font-bold">
           {[
-            { label: "GitHub", href: "https://github.com" },
-            { label: "LinkedIn", href: "https://linkedin.com" },
-            { label: "Email", href: "mailto:hello@vidun.dev" },
+            { label: "GitHub", href: github ?? "https://github.com" },
+            { label: "LinkedIn", href: linkedin ?? "https://linkedin.com" },
+            { label: "Email", href: `mailto:${mail}` },
           ].map((l) => (
             <a
               key={l.label}

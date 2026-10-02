@@ -8,7 +8,7 @@ import { CaseStory } from "@/components/portfolio/case-story";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PROJECTS } from "@/lib/projects";
-import { getPublicProjectDetail, getPublicProjectSlugs } from "@/lib/content";
+import { getPublicProjectDetail, getPublicProjectSlugs, getSettings } from "@/lib/content";
 
 export async function generateStaticParams() {
   const dbSlugs = await getPublicProjectSlugs();
@@ -51,6 +51,7 @@ export default async function ProjectPage({
   if (!p) notFound();
 
   const dbSlugs = await getPublicProjectSlugs();
+  const settings = await getSettings();
   const order = [...new Set([...PROJECTS.map((x) => x.slug), ...dbSlugs])];
   const at = order.indexOf(slug);
   const prev = order[(at - 1 + order.length) % order.length];
@@ -122,7 +123,12 @@ export default async function ProjectPage({
           </div>
         )}
       </main>
-      <Footer />
+      <Footer
+        siteName={settings?.site_name}
+        email={settings?.email}
+        github={settings?.github_url}
+        linkedin={settings?.linkedin_url}
+      />
     </div>
   );
 }

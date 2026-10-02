@@ -4,11 +4,11 @@ import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import {
-  createProject,
+import { createProject,
   updateProject,
   type ProjectActionState,
 } from "@/app/actions/admin-projects";
+import { MediaPicker } from "@/components/admin/media-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -137,7 +137,10 @@ export function ProjectEditor({
       </div>
       <div className="grid gap-5 md:grid-cols-3">
         <Field label="HERO IMAGE URL">
-          <Input name="hero_image_url" defaultValue={initial.hero_image_url} placeholder="https://…" />
+          <div className="flex gap-2">
+            <Input id="hero_image_url" name="hero_image_url" defaultValue={initial.hero_image_url} placeholder="https://…" />
+            <MediaPicker />
+          </div>
         </Field>
         <Field label="GITHUB URL">
           <Input name="github_url" defaultValue={initial.github_url} placeholder="https://…" />

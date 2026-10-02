@@ -38,6 +38,48 @@ export type JourneyStep = {
   color: string;
 };
 
+export type AboutProfile = {
+  headline: string;
+  bio: string;
+  interests: string[];
+  currently_building: string;
+  currently_learning: string;
+  likes: string[];
+  profile_image_url: string | null;
+  location: string;
+  availability: boolean;
+  email: string;
+};
+
+export async function getAbout(): Promise<AboutProfile | undefined> {
+  try {
+    const sb = await createClient();
+    const { data, error } = await sb
+      .from("about")
+      .select("headline, bio, interests, currently_building, currently_learning, likes, profile_image_url, location, availability, email")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .single();
+    if (error || !data) return undefined;
+    return data as unknown as AboutProfile;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function getSettings(): Promise<Record<string, string> | undefined> {
+  try {
+    const sb = await createClient();
+    const { data, error } = await sb.from("site_settings").select("key, value");
+    if (error || !data?.length) return undefined;
+    return Object.fromEntries(
+      (data as { key: string; value: string }[]).map((r) => [r.key, r.value]),
+    );
+  } catch {
+    return undefined;
+  }
+}
+
 type DbProject = {
   id: string;
   slug: string;

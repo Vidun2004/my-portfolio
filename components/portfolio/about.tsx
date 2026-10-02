@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "motion/react";
 import type Lenis from "lenis";
 import { Reveal } from "@/components/animation/reveal";
+import type { AboutProfile } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 type Line =
@@ -11,17 +12,32 @@ type Line =
   | { kind: "out"; text: string }
   | { kind: "chips"; items: string[] };
 
-const SCRIPT: Line[] = [
-  { kind: "cmd", text: "whoami" },
-  { kind: "out", text: "vidun — software engineering student. human. ships software." },
-  { kind: "cmd", text: "cat currently.txt" },
-  { kind: "out", text: "BUILDING  → production applications" },
-  { kind: "out", text: "LEARNING  → AI · systems · game dev" },
-  { kind: "cmd", text: "cat likes.txt" },
-  { kind: "chips", items: ["clean architecture", "good ux", "automation"] },
-  { kind: "cmd", text: "status" },
-  { kind: "out", text: "● open to work — hello@vidun.dev" },
-];
+const FALLBACK: AboutProfile = {
+  headline: "Who's behind the code?",
+  bio: "vidun — software engineering student. human. ships software.",
+  interests: [],
+  currently_building: "production applications",
+  currently_learning: "AI · systems · game dev",
+  likes: ["clean architecture", "good ux", "automation"],
+  profile_image_url: null,
+  location: "",
+  availability: true,
+  email: "hello@vidun.dev",
+};
+
+function buildScript(p: AboutProfile): Line[] {
+  return [
+    { kind: "cmd", text: "whoami" },
+    { kind: "out", text: p.bio },
+    { kind: "cmd", text: "cat currently.txt" },
+    { kind: "out", text: `BUILDING  → ${p.currently_building}` },
+    { kind: "out", text: `LEARNING  → ${p.currently_learning}` },
+    { kind: "cmd", text: "cat likes.txt" },
+    { kind: "chips", items: p.likes.length ? p.likes : ["code"] },
+    { kind: "cmd", text: "status" },
+    { kind: "out", text: p.availability ? `● open to work — ${p.email}` : `● busy — ${p.email}` },
+  ];
+}
 
 const OPEN_TARGETS: Record<string, string> = {
   home: "#home",
@@ -50,7 +66,7 @@ function scrollToHash(hash: string) {
 
 type Entry = { cmd: string; out: Line[] };
 
-function runCommand(raw: string): { out: Line[]; clear?: boolean } {
+function runCommand(raw: string, p: AboutProfile): { out: Line[]; clear?: boolean } {
   const [name, ...args] = raw.trim().split(/\s+/);
   switch (name) {
     case "help":
@@ -60,9 +76,9 @@ function runCommand(raw: string): { out: Line[]; clear?: boolean } {
         ],
       };
     case "whoami":
-      return { out: [{ kind: "out", text: "vidun — software engineering student. human. ships software." }] };
+      return { out: [{ kind: "out", text: p.bio }] };
     case "status":
-      return { out: [{ kind: "out", text: "● open to work — hello@vidun.dev" }] };
+      return { out: [{ kind: "out", text: p.availability ? `● open to work — ${p.email}` : `● busy — ${p.email}` }] };
     case "ls":
       return { out: [{ kind: "out", text: "currently.txt  likes.txt" }] };
     case "cat": {
@@ -70,12 +86,12 @@ function runCommand(raw: string): { out: Line[]; clear?: boolean } {
       if (file === "currently.txt")
         return {
           out: [
-            { kind: "out", text: "BUILDING  → production applications" },
-            { kind: "out", text: "LEARNING  → AI · systems · game dev" },
+            { kind: "out", text: `BUILDING  → ${p.currently_building}` },
+            { kind: "out", text: `LEARNING  → ${p.currently_learning}` },
           ],
         };
       if (file === "likes.txt")
-        return { out: [{ kind: "chips", items: ["clean architecture", "good ux", "automation"] }] };
+        return { out: [{ kind: "chips", items: p.likes.length ? p.likes : ["code"] }] };
       return { out: [{ kind: "out", text: `cat: ${args[0] ?? ""}: no such file — try 'ls'` }] };
     }
     case "open": {
@@ -85,7 +101,7 @@ function runCommand(raw: string): { out: Line[]; clear?: boolean } {
       return { out: [{ kind: "out", text: `opening ${target} …` }] };
     }
     case "email":
-      return { out: [{ kind: "out", text: "hello@vidun.dev — say hi, I reply fast." }] };
+      return { out: [{ kind: "out", text: `${p.email} — say hi, I reply fast.` }] };
     case "clear":
       return { out: [], clear: true };
     case "sudo":
@@ -93,54 +109,6 @@ function runCommand(raw: string): { out: Line[]; clear?: boolean } {
     default:
       return { out: [{ kind: "out", text: `command not found: ${name} — try 'help'` }] };
   }
-}
-
-function useTypedLines(active: boolean, instant: boolean) {
-  const [done, setDone] = useState(0);
-  const [chars, setChars] = useState(0);
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-  useEffect(() => {
-    if (!active) return;
-    if (instant) {
-      setDone(SCRIPT.length);
-      return;
-    }
-    let line = 0;
-    let char = 0;
-    function step() {
-      const current = SCRIPT[line];
-      if (!current) {
-        setDone(SCRIPT.length);
-        return;
-      }
-      if (current.kind === "cmd") {
-        if (char <= current.text.length) {
-          setChars(char);
-          char += 1;
-          timers.current.push(setTimeout(step, 42));
-        } else {
-          line += 1;
-          char = 0;
-          setDone(line);
-          timers.current.push(setTimeout(step, 260));
-        }
-      } else {
-        line += 1;
-        char = 0;
-        setChars(0);
-        setDone(line);
-        timers.current.push(setTimeout(step, 320));
-      }
-    }
-    timers.current.push(setTimeout(step, 500));
-    return () => {
-      timers.current.forEach(clearTimeout);
-      timers.current = [];
-    };
-  }, [active, instant]);
-
-  return { done, chars };
 }
 
 function RenderLine({ line }: { line: Line }) {
@@ -170,38 +138,77 @@ function RenderLine({ line }: { line: Line }) {
   );
 }
 
-const MINI = [
-  { label: "CURRENTLY BUILDING", body: "Production applications", color: "bg-brand-blue", tilt: "rotate-1" },
-  { label: "EXPLORING", body: "AI • Systems • Game Dev", color: "bg-brand-teal", tilt: "-rotate-1" },
-  { label: "I LIKE", body: "Clean architecture • Good UX • Automation", color: "bg-brand-yellow", tilt: "rotate-2" },
-];
+export function About({ profile }: { profile?: AboutProfile }) {
+  const p = profile ?? FALLBACK;
+  const script = useMemo(() => buildScript(p), [p]);
 
-export function About() {
   const termRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const inView = useInView(termRef, { once: true, margin: "-120px" });
   const reduce = useReducedMotion();
-  const { done, chars } = useTypedLines(inView, !!reduce);
+
+  const [done, setDone] = useState(0);
+  const [chars, setChars] = useState(0);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    if (!inView) return;
+    if (reduce) {
+      setDone(script.length);
+      return;
+    }
+    let line = 0;
+    let char = 0;
+    function step() {
+      const current = script[line];
+      if (!current) {
+        setDone(script.length);
+        return;
+      }
+      if (current.kind === "cmd") {
+        if (char <= current.text.length) {
+          setChars(char);
+          char += 1;
+          timers.current.push(setTimeout(step, 42));
+        } else {
+          line += 1;
+          char = 0;
+          setDone(line);
+          timers.current.push(setTimeout(step, 260));
+        }
+      } else {
+        line += 1;
+        char = 0;
+        setChars(0);
+        setDone(line);
+        timers.current.push(setTimeout(step, 320));
+      }
+    }
+    timers.current.push(setTimeout(step, 500));
+    return () => {
+      timers.current.forEach(clearTimeout);
+      timers.current = [];
+    };
+  }, [inView, reduce, script]);
 
   const [entries, setEntries] = useState<Entry[]>([]);
   const [value, setValue] = useState("");
   const [cleared, setCleared] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // keep the latest line in view as the transcript grows
+  const introDone = done >= script.length;
+  const visible = cleared ? [] : script.slice(0, done);
+  const typing = !reduce && !cleared && done < script.length ? script[done] : null;
+
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [done, chars, entries]);
 
-  const introDone = done >= SCRIPT.length;
-  const visible = cleared ? [] : SCRIPT.slice(0, done);
-  const typing = !reduce && !cleared && done < SCRIPT.length ? SCRIPT[done] : null;
-
   function submit() {
     const cmd = value.trim();
     if (!cmd) return;
-    const res = runCommand(cmd);
+    const res = runCommand(cmd, p);
     if (res.clear) {
       setCleared(true);
       setEntries([]);
@@ -220,9 +227,12 @@ export function About() {
             A developer who likes understanding how things actually work.
           </p>
           <h2 className="mt-2 text-4xl font-bold tracking-tight uppercase md:text-6xl">
-            Who&apos;s behind
-            <br />
-            the code?
+            {p.headline.split("\n").map((l, i, arr) => (
+              <span key={i}>
+                {l}
+                {i < arr.length - 1 && <br />}
+              </span>
+            ))}
           </h2>
         </Reveal>
 
@@ -291,14 +301,18 @@ export function About() {
         </Reveal>
 
         <div className="mx-auto mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
-          {MINI.map((m, i) => (
-            <Reveal key={m.label} delay={0.15 + i * 0.08}>
-              <div className={cn("border-ink shadow-brutal rounded-brutal-md border-2 p-4 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg", m.color, m.tilt)}>
-                <p className="font-mono text-[11px] font-bold tracking-wide">{m.label}</p>
-                <p className="mt-2 text-sm font-bold">{m.body}</p>
-              </div>
-            </Reveal>
-          ))}
+          <div className="border-ink bg-brand-blue shadow-brutal rounded-brutal-md rotate-1 border-2 p-4 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg">
+            <p className="font-mono text-[11px] font-bold tracking-wide">CURRENTLY BUILDING</p>
+            <p className="mt-2 text-sm font-bold">{p.currently_building}</p>
+          </div>
+          <div className="border-ink bg-brand-teal shadow-brutal rounded-brutal-md -rotate-1 border-2 p-4 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg">
+            <p className="font-mono text-[11px] font-bold tracking-wide">EXPLORING</p>
+            <p className="mt-2 text-sm font-bold">{p.currently_learning}</p>
+          </div>
+          <div className="border-ink bg-brand-yellow shadow-brutal rounded-brutal-md rotate-2 border-2 p-4 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg">
+            <p className="font-mono text-[11px] font-bold tracking-wide">BASED IN</p>
+            <p className="mt-2 text-sm font-bold">{p.location || "Earth"}</p>
+          </div>
         </div>
       </div>
     </section>

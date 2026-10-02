@@ -55,3 +55,22 @@ export async function deleteMedia(path: string): Promise<MediaState> {
   revalidatePath("/admin/media");
   return { ok: true };
 }
+
+export type MediaImage = { path: string; url: string };
+
+export async function listMediaImages(): Promise<MediaImage[]> {
+  await requireAdmin();
+  const admin = createAdminClient();
+  const out: MediaImage[] = [];
+  for (const folder of MEDIA_FOLDERS) {
+    const { data, error } = await admin.storage.from("portfolio").list(folder, { limit: 100 });
+    if (error) continue;
+    for (const f of data ?? []) {
+      if (!f.name || f.name.startsWith(".") || !/\.(jpg|jpeg|png|webp|svg)$/i.test(f.name)) continue;
+      const path = `${folder}/${f.name}`;
+      const { data: pub } = admin.storage.from("portfolio").getPublicUrl(path);
+      out.push({ path, url: pub.publicUrl });
+    }
+  }
+  return out;
+}

@@ -54,8 +54,7 @@ export default async function AdminDashboard() {
       <div className="border-ink bg-white shadow-brutal rounded-brutal-md mt-6 border-2 p-6">
         <h2 className="font-mono text-xs font-bold text-black/50">NEXT UP</h2>
         <p className="mt-2 text-sm text-black/70">
-          CRUD pages for projects, skills, experience and messages land here —
-          each in its own commit.
+          Everything is wired — add content above, check the public site, then deploy.
         </p>
       </div>
     </div>
