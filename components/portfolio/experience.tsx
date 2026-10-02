@@ -1,15 +1,10 @@
 "use client";
 
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
+import { Plane } from "lucide-react";
 import { Reveal } from "@/components/animation/reveal";
 import { Badge } from "@/components/ui/badge";
 import type { JourneyStep } from "@/lib/content";
 import { cn } from "@/lib/utils";
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const STEPS: JourneyStep[] = [
   {
@@ -35,47 +30,14 @@ const STEPS: JourneyStep[] = [
   },
 ];
 
-function stationCode(s: JourneyStep): string {
-  const initials = s.role
-    .split(" ")
-    .map((w) => w[0])
-    .slice(0, 3)
-    .join("");
-  return `’${s.year.slice(2)} · ${initials}`;
+const BARS = [3, 1, 2, 1, 4, 1, 2, 3, 1, 2, 1, 4, 2, 1, 3, 1];
+
+function shortRole(role: string): string {
+  return role.length > 14 ? role.split(" ").slice(0, 2).join(" ") : role;
 }
 
 export function Experience({ steps }: { steps?: JourneyStep[] }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLSpanElement>(null);
-  const trainRef = useRef<HTMLSpanElement>(null);
   const items = steps?.length ? steps : STEPS;
-
-  useGSAP(
-    () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      const trigger = {
-        trigger: trackRef.current,
-        start: "top 70%",
-        end: "bottom 55%",
-        scrub: 0.6,
-      } as const;
-      gsap.fromTo(
-        progressRef.current,
-        { scaleY: 0 },
-        { scaleY: 1, ease: "none", scrollTrigger: trigger },
-      );
-      gsap.fromTo(
-        trainRef.current,
-        { y: 0 },
-        {
-          y: () => (trackRef.current?.clientHeight ?? 0) - 16,
-          ease: "none",
-          scrollTrigger: { ...trigger, invalidateOnRefresh: true },
-        },
-      );
-    },
-    { scope: trackRef },
-  );
 
   return (
     <section id="experience" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
@@ -89,59 +51,38 @@ export function Experience({ steps }: { steps?: JourneyStep[] }) {
               The journey
             </h2>
           </div>
-          <div className="border-ink bg-brand-teal shadow-brutal rounded-brutal-md rotate-1 border-2 px-4 py-2 font-mono text-sm font-bold">
-            ▼ CAREER LINE — ALL ABOARD
+          <div className="border-ink bg-brand-yellow shadow-brutal rounded-brutal-md flex -rotate-1 items-center gap-2 border-2 px-4 py-2 font-mono text-sm font-bold">
+            <Plane size={16} /> VIDUN AIRLINES ✦ ALL ABOARD
           </div>
         </Reveal>
 
-        <div ref={trackRef} className="relative mt-12">
-          {/* rail */}
-          <span aria-hidden className="bg-ink/10 absolute top-0 bottom-0 left-5 w-1.5 rounded-full md:left-1/2 md:-translate-x-1/2" />
-          <span aria-hidden className="absolute top-0 bottom-0 left-5 w-1.5 md:left-1/2 md:-translate-x-1/2">
-            <span ref={progressRef} className="bg-ink block h-full w-full origin-top scale-y-0 rounded-full" />
-          </span>
-          {/* traveling train dot */}
-          <span
-            aria-hidden
-            className="absolute top-0 left-5 z-10 md:left-1/2 md:-translate-x-1/2"
-          >
-            <span ref={trainRef} className="border-ink bg-brand-pink shadow-brutal block size-4 rounded-full border-2" />
-          </span>
-
+        <div className="mx-auto mt-12 max-w-4xl space-y-6">
           {items.map((s, i) => {
-            const right = i % 2 === 0;
+            const from = items[i + 1] ? shortRole(items[i + 1].role) : "CURIOSITY";
             return (
-              <div
-                key={s.year + s.role}
-                className={cn(
-                  "relative pb-10 pl-14 last:pb-0 md:w-1/2 md:pl-0",
-                  right ? "md:ml-auto md:pl-10" : "md:mr-auto md:pr-10",
-                )}
-              >
-                {/* station node */}
-                <span
+              <Reveal key={s.year + s.role} delay={i * 0.06}>
+                <div
                   className={cn(
-                    "border-ink absolute top-5 left-5 z-10 flex size-7 -translate-x-1/2 items-center justify-center rounded-full border-[3px] bg-white md:translate-x-0",
-                    right ? "md:-left-3.5" : "md:-right-3.5",
+                    "border-ink bg-white shadow-brutal rounded-brutal-md relative flex items-stretch border-2 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg",
+                    i % 2 ? "rotate-1" : "-rotate-1",
                   )}
                 >
-                  <span className={cn("size-2.5 rounded-full", i === 0 ? "animate-pulse bg-ink" : "bg-ink/40")} />
-                </span>
-                <Reveal delay={0.05}>
-                  <div className="border-ink bg-white shadow-brutal rounded-brutal-md border-2 p-5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className={cn("rounded border-2 border-ink px-2 py-0.5 font-mono text-xs font-bold", s.color)}>
-                        {stationCode(s)}
+                  {/* main stub */}
+                  <div className="flex-1 p-5 md:p-6">
+                    <div className="flex items-center gap-3 font-mono text-xs font-bold">
+                      <span className="text-black/40">{from}</span>
+                      <span aria-hidden>✈ ───</span>
+                      <span className={cn("rounded border-2 border-ink px-2 py-0.5", s.color)}>
+                        {shortRole(s.role)}
                       </span>
                       {i === 0 && (
-                        <span className="bg-ink text-cream rounded-full px-2 py-0.5 font-mono text-[11px] font-bold">
-                          ● YOU ARE HERE
+                        <span className="bg-ink text-cream rounded-full px-2 py-0.5 text-[11px]">
+                          ● ONBOARD
                         </span>
                       )}
                     </div>
-                    <h3 className="mt-2 text-xl font-bold">{s.role}</h3>
-                    <p className="mt-1 font-mono text-xs font-bold text-black/40">{s.year}</p>
-                    <p className="mt-2 text-sm text-black/70">{s.desc}</p>
+                    <h3 className="mt-2 text-2xl font-bold md:text-3xl">{s.role}</h3>
+                    <p className="mt-1 text-sm text-black/70">{s.desc}</p>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {s.tech.map((t) => (
                         <Badge key={t} variant="neutral" className="font-mono text-[11px]">
@@ -149,9 +90,30 @@ export function Experience({ steps }: { steps?: JourneyStep[] }) {
                         </Badge>
                       ))}
                     </div>
+                    <div className="mt-4 flex gap-6 font-mono text-xs font-bold text-black/50">
+                      <span>DATE<span className="block text-sm text-ink">{s.year}</span></span>
+                      <span>GATE<span className="block text-sm text-ink">G{i + 1}</span></span>
+                      <span>SEAT<span className="block text-sm text-ink">{s.year.slice(2)}{"ABCDEF"[i % 6]}</span></span>
+                    </div>
                   </div>
-                </Reveal>
-              </div>
+
+                  {/* perforation */}
+                  <div aria-hidden className="relative w-6 shrink-0 border-l-2 border-dashed border-ink/40">
+                    <span className="bg-cream absolute -top-3.5 -left-3.5 size-6 rounded-full" />
+                    <span className="bg-cream absolute -bottom-3.5 -left-3.5 size-6 rounded-full" />
+                  </div>
+
+                  {/* barcode stub */}
+                  <div className="hidden w-28 shrink-0 flex-col items-center justify-center gap-2 p-4 sm:flex">
+                    <div className="flex h-12 items-stretch gap-[2px]">
+                      {BARS.map((w, b) => (
+                        <span key={b} className="bg-ink" style={{ width: w }} />
+                      ))}
+                    </div>
+                    <span className="font-mono text-[10px] font-bold tracking-widest">ADMIT ONE</span>
+                  </div>
+                </div>
+              </Reveal>
             );
           })}
         </div>
