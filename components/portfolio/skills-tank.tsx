@@ -9,6 +9,16 @@ import { cn } from "@/lib/utils";
 const TANK_H = 520;
 const WALL = 120;
 
+// organic blob silhouettes (border-safe, no clip-path)
+const BLOBS = [
+  "58% 42% 55% 45% / 48% 55% 45% 52%",
+  "42% 58% 46% 54% / 58% 44% 56% 42%",
+  "52% 48% 38% 62% / 45% 60% 40% 55%",
+  "62% 38% 58% 42% / 42% 52% 48% 58%",
+  "45% 55% 52% 48% / 55% 48% 52% 45%",
+  "55% 45% 62% 38% / 38% 58% 42% 62%",
+];
+
 /**
  * Matter.js bubble tank: skills drop in, pile up, collide and can be
  * grabbed and flung. Category filter spotlights instead of removing.
@@ -40,7 +50,7 @@ export function SkillsTank({
     Matter.Composite.add(engine.world, [ground, left, right]);
 
     const bodies = skills.map((s, i) => {
-      const r = 30 + ((s.level ?? 50) / 100) * 24;
+      const r = 34 + ((s.level ?? 50) / 100) * 26;
       const b = Matter.Bodies.circle(
         60 + ((i * 137) % Math.max(W - 120, 200)),
         -80 - i * 70,
@@ -130,14 +140,14 @@ export function SkillsTank({
     <div>
       <div
         ref={boxRef}
-        className="border-ink bg-white/60 shadow-brutal rounded-brutal-md relative mt-8 w-full overflow-hidden border-2 select-none"
+        className="relative mt-8 w-full overflow-visible select-none"
         style={{ height: TANK_H }}
       >
-        <p className="pointer-events-none absolute top-3 left-4 font-mono text-xs font-bold text-black/30">
+        <p className="pointer-events-none absolute -top-6 left-1 font-mono text-xs font-bold text-black/30">
           GRAVITY: ON — GRAB &amp; FLING
         </p>
-        {skills.map((s) => {
-          const r = 30 + ((s.level ?? 50) / 100) * 24;
+        {skills.map((s, i) => {
+          const r = 34 + ((s.level ?? 50) / 100) * 26;
           const dim = active !== "all" && s.cat !== active;
           return (
             <div
@@ -149,18 +159,28 @@ export function SkillsTank({
                 else elsRef.current.delete(s.name);
               }}
               onClick={() => setSelected(s)}
-              style={{ width: r * 2, height: r * 2, marginLeft: -r, marginTop: -r }}
+              style={{
+                width: r * 2,
+                height: r * 2,
+                marginLeft: -r,
+                marginTop: -r,
+                borderRadius: BLOBS[i % BLOBS.length],
+                boxShadow: "4px 4px 0 #171717",
+              }}
               className={cn(
-                "absolute top-0 left-0 flex cursor-grab items-center justify-center rounded-full border-2 border-ink text-center active:cursor-grabbing",
+                "absolute top-0 left-0 flex flex-col items-center justify-center border-2 border-ink text-center",
                 s.color,
                 dim && "opacity-20 saturate-0",
               )}
             >
               <span
-                className="px-1 font-mono font-bold break-words"
+                className="px-2 font-mono font-bold break-words"
                 style={{ fontSize: Math.max(10, Math.min(14, r * 0.3)) }}
               >
                 {s.name.toUpperCase()}
+              </span>
+              <span className="border-ink mt-1 rounded-full border bg-white px-1.5 font-mono text-[10px] font-bold">
+                LV {s.level}
               </span>
             </div>
           );
