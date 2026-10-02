@@ -4,18 +4,24 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Check, Copy, Trash2 } from "lucide-react";
 import { deleteMedia } from "@/app/actions/admin-media";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { toast } from "@/components/ui/toast";
 import type { MediaFile } from "@/app/admin/(panel)/media/page";
 
 export function MediaGrid({ files }: { files: MediaFile[] }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [copied, setCopied] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  function remove(path: string) {
-    if (!window.confirm(`Delete ${path}?`)) return;
+  function remove() {
+    if (!deleting) return;
+    const path = deleting;
     start(async () => {
       const res = await deleteMedia(path);
       if (!res.ok) window.alert(res.error);
+      else toast.add({ title: "File deleted" });
+      setDeleting(null);
       router.refresh();
     });
   }
@@ -49,7 +55,7 @@ export function MediaGrid({ files }: { files: MediaFile[] }) {
                 {copied === f.url ? <><Check size={14} /> COPIED</> : <><Copy size={14} /> URL</>}
               </button>
               <button
-                onClick={() => remove(f.path)}
+                onClick={() => setDeleting(f.path)}
                 disabled={pending}
                 className="flex items-center gap-1 rounded-lg border-2 border-ink bg-white px-2 py-1 font-mono text-xs font-bold hover:bg-red-50 disabled:opacity-50"
               >
@@ -59,6 +65,14 @@ export function MediaGrid({ files }: { files: MediaFile[] }) {
           </div>
         </div>
       ))}
+      <ConfirmDialog
+        open={deleting !== null}
+        title="Delete file?"
+        message={deleting ? `Delete ${deleting}? This can't be undone.` : ""}
+        pending={pending}
+        onConfirm={remove}
+        onCancel={() => setDeleting(null)}
+      />
     </div>
   );
 }

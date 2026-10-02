@@ -6,6 +6,7 @@ import { deleteSkill } from "@/app/actions/admin-skills";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/admin/modal";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { toast } from "@/components/ui/toast";
 import { SkillEditor, type SkillInitial } from "@/components/admin/skill-editor";
 
 export type SkillRow = SkillInitial & { id: string };
@@ -19,6 +20,7 @@ export function SkillsManager({ skills }: { skills: SkillRow[] }) {
   function closeAndRefresh() {
     setEditing(null);
     router.refresh();
+    toast.add({ title: "Skill saved ✓" });
   }
 
   function confirmDelete() {
@@ -27,6 +29,7 @@ export function SkillsManager({ skills }: { skills: SkillRow[] }) {
     start(async () => {
       const res = await deleteSkill(row.id);
       if (!res.ok) window.alert(res.error);
+      else toast.add({ title: "Skill deleted" });
       setDeleting(null);
       router.refresh();
     });

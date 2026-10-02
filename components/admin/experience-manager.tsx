@@ -6,6 +6,7 @@ import { deleteExperience } from "@/app/actions/admin-experience";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/admin/modal";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { toast } from "@/components/ui/toast";
 import { ExperienceEditor, type ExpInitial } from "@/components/admin/experience-editor";
 
 export type ExpRow = ExpInitial & { id: string };
@@ -19,6 +20,7 @@ export function ExperienceManager({ items }: { items: ExpRow[] }) {
   function closeAndRefresh() {
     setEditing(null);
     router.refresh();
+    toast.add({ title: "Entry saved ✓" });
   }
 
   function confirmDelete() {
@@ -27,6 +29,7 @@ export function ExperienceManager({ items }: { items: ExpRow[] }) {
     start(async () => {
       const res = await deleteExperience(row.id);
       if (!res.ok) window.alert(res.error);
+      else toast.add({ title: "Entry deleted" });
       setDeleting(null);
       router.refresh();
     });

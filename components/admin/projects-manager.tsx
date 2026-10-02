@@ -6,6 +6,7 @@ import { deleteProject } from "@/app/actions/admin-projects";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/admin/modal";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { toast } from "@/components/ui/toast";
 import { ProjectEditor, type EditorInitial, type EditorTech } from "@/components/admin/project-editor";
 
 export type ProjectRow = EditorInitial & {
@@ -25,9 +26,10 @@ export function ProjectsManager({
   const [deleting, setDeleting] = useState<ProjectRow | null>(null);
   const [pending, start] = useTransition();
 
-  function closeAndRefresh() {
+  function closeAndRefresh(saved = true) {
     setEditing(null);
     router.refresh();
+    if (saved) toast.add({ title: "Project saved ✓" });
   }
 
   function confirmDelete() {
@@ -36,6 +38,7 @@ export function ProjectsManager({
     start(async () => {
       const res = await deleteProject(row.id);
       if (!res.ok) window.alert(res.error);
+      else toast.add({ title: "Project deleted" });
       setDeleting(null);
       router.refresh();
     });
