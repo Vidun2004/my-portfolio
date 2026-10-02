@@ -176,25 +176,24 @@
     font-weight: var(--font-weight-heading);
   }
 }
-body,
-.scrollbar {
-  --sb-track-color: #ffffff;
-  --sb-thumb-color: #000000;
+/* Neobrutalist scrollbar: black bar on white rail */
+html {
+  scrollbar-color: #171717 #ffffff;
 }
-.scrollbar::-webkit-scrollbar {
-  width: 16px;
+::-webkit-scrollbar {
+  width: 14px;
 }
-.scrollbar::-webkit-scrollbar-track {
-  background: var(--sb-track-color);
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-left: 2px solid #171717;
 }
-.scrollbar::-webkit-scrollbar-thumb {
-  background: var(--sb-thumb-color);
+::-webkit-scrollbar-thumb {
+  background: #171717;
+  border: 2px solid #ffffff;
+  border-radius: 8px;
 }
-
-@supports not selector(::-webkit-scrollbar) {
-  .scrollbar {
-    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: #000000;
 }
 
 @theme {
