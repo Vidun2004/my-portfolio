@@ -77,6 +77,7 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
   useGSAP(
     () => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (!visualRef.current || !sectionRef.current) return;
       gsap.fromTo(
         visualRef.current,
         { yPercent: -8 },

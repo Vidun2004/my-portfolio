@@ -42,8 +42,9 @@ function scrollAfterNav(hash: string | null) {
 }
 
 /**
- * Brutalist curtain wipe between pages: yellow + ink panels slam up
- * with the destination title, then lift away on arrival.
+ * Rubber-stamp slam between pages: ink dims the old page, then a tilted
+ * brutalist stamp card slams in with the destination title, holds, and
+ * rides the overlay up on arrival.
  */
 export function TransitionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -115,7 +116,15 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
       {children}
       <AnimatePresence>
         {cover && (
-          <div key="wipe" className="pointer-events-none fixed inset-0 z-[150]">
+          <div key="stamp" className="pointer-events-none fixed inset-0 z-[150]">
+            <motion.div
+              aria-hidden
+              initial={{ opacity: 0 }}
+              animate={{ opacity: leaving ? 0 : 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="bg-ink absolute inset-0"
+            />
             <motion.div
               aria-hidden
               initial={{ y: "100%" }}
@@ -123,25 +132,31 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
               exit={{ y: "-100%" }}
               transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
               onAnimationComplete={onCoverDone}
-              className="bg-brand-yellow absolute inset-0"
-            />
-            <motion.div
-              aria-hidden
-              initial={{ y: "100%" }}
-              animate={{ y: leaving ? "-100%" : "0%" }}
-              transition={{ duration: 0.55, delay: leaving ? 0.06 : 0.09, ease: [0.76, 0, 0.24, 1] }}
-              className="bg-ink absolute inset-0 flex items-center justify-center"
+              className="absolute inset-0 flex items-center justify-center px-6"
             >
-              <div className="px-6 text-center">
-                <p className="font-mono text-xs font-bold tracking-[0.3em] text-brand-yellow">
-                  OPENING CASE STUDY
+              <motion.div
+                initial={{ scale: 2.4, rotate: -4, opacity: 0 }}
+                animate={{ scale: 1, rotate: -4, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22, delay: 0.2 }}
+                className="border-ink bg-cream shadow-brutal-lg rounded-brutal-lg max-w-lg border-[3px] px-8 py-6 text-center"
+              >
+                <p className="inline-block rounded-full border-2 border-ink bg-brand-yellow px-3 py-0.5 font-mono text-[11px] font-bold tracking-widest">
+                  ● STAMPED FOR
                 </p>
-                <p className="text-cream mt-2 font-mono text-3xl font-bold uppercase md:text-5xl">
-                  {"{ "}
+                <p className="mt-3 font-mono text-3xl font-bold uppercase md:text-5xl">
                   {cover.title}
-                  {" }"}
                 </p>
-              </div>
+                <div className="border-ink mt-4 flex items-center justify-between gap-3 border-t-2 border-dashed pt-3">
+                  <span className="font-mono text-[10px] font-bold tracking-widest">
+                    ADMIT ONE ✦ VIDUN.DEV
+                  </span>
+                  <span className="flex h-5 items-stretch gap-[2px]" aria-hidden>
+                    {[3, 1, 2, 1, 4, 1, 2].map((w, i) => (
+                      <span key={i} className="bg-ink" style={{ width: w }} />
+                    ))}
+                  </span>
+                </div>
+              </motion.div>
             </motion.div>
           </div>
         )}

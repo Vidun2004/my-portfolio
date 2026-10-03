@@ -7,13 +7,12 @@ import { useEffect, useState } from "react";
 const SEEN_KEY = "vidun-splash-seen";
 
 /**
- * Landing splash reusing the case-study curtain method:
- * yellow + ink panels start covered, then lift with the same
- * 0.55s brutalist wipe. Once per session, skipped on reduced motion.
+ * Landing splash in the rubber-stamp language: solid ink backdrop with
+ * a tilted brutalist stamp card, lifting away with the same 0.55s wipe
+ * as the page transition. Once per session, skipped on reduced motion.
  *
- * Editing override: visit `/?splash=1` to force it on every reload,
- * `/?splash=0` to suppress it, `/?splash=stay` to pin it on screen
- * (click or Escape lifts it) while editing.
+ * Editing override: `/?splash=1` forces it every reload, `/?splash=0`
+ * suppresses it, `/?splash=stay` pins it (click or Escape lifts).
  */
 export function SplashScreen() {
   const reduce = useReducedMotion();
@@ -103,24 +102,26 @@ export function SplashScreen() {
         initial={{ y: "0%" }}
         animate={{ y: leaving ? "-100%" : "0%" }}
         transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
-        className="bg-brand-yellow absolute inset-0"
-      />
-      <motion.div
-        initial={{ y: "0%" }}
-        animate={{ y: leaving ? "-100%" : "0%" }}
-        transition={{ duration: 0.55, delay: 0.06, ease: [0.76, 0, 0.24, 1] }}
         onAnimationComplete={onLiftDone}
-        className="bg-ink absolute inset-0 flex items-center justify-center"
+        className="bg-ink absolute inset-0 flex items-center justify-center px-6"
       >
-        <div className="px-6 text-center">
-          <p className="text-cream mt-2 font-mono text-3xl font-bold uppercase md:text-5xl">
+        <motion.div
+          initial={{ scale: 2.4, rotate: -4, opacity: 0 }}
+          animate={{ scale: 1, rotate: -4, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 22 }}
+          className="border-ink bg-cream shadow-brutal-lg rounded-brutal-lg max-w-md border-[3px] px-8 py-6 text-center"
+        >
+          <p className="border-ink bg-brand-yellow inline-block rounded-full border-2 px-3 py-0.5 font-mono text-[11px] font-bold tracking-widest">
+            PORTFOLIO 2026
+          </p>
+          <p className="mt-3 font-mono text-3xl font-bold uppercase md:text-5xl">
             {"{ vidun.dev }"}
           </p>
-          <p className="text-cream/60 mt-4 font-mono text-xs md:text-sm">
+          <p className="mt-4 font-mono text-xs text-black/60 md:text-sm">
             $ loading portfolio
-            <span className="ml-1 inline-block h-3.5 w-2 animate-pulse bg-brand-yellow align-middle" />
+            <span className="bg-ink ml-1 inline-block h-3.5 w-2 animate-pulse align-middle" />
           </p>
-          <div className="border-cream/30 mx-auto mt-3 h-2 w-48 overflow-hidden rounded-full border-2 md:w-64">
+          <div className="border-ink mx-auto mt-3 h-2.5 w-48 overflow-hidden rounded-full border-2 bg-white md:w-64">
             <motion.div
               initial={{ width: "0%" }}
               animate={{ width: leaving ? "100%" : stay ? "100%" : "85%" }}
@@ -128,12 +129,22 @@ export function SplashScreen() {
               className="bg-brand-yellow h-full"
             />
           </div>
+          <div className="mt-4 flex items-center justify-between gap-3 border-t-2 border-dashed border-ink/30 pt-3">
+            <span className="font-mono text-[10px] font-bold tracking-widest text-black/60">
+              ADMIT ONE ✦ VIDUN.DEV
+            </span>
+            <span className="flex h-5 items-stretch gap-[2px]" aria-hidden>
+              {[3, 1, 2, 1, 4, 1, 2].map((w, i) => (
+                <span key={i} className="bg-ink" style={{ width: w }} />
+              ))}
+            </span>
+          </div>
           {stay && !leaving && (
-            <p className="text-cream/40 mt-4 font-mono text-[11px] tracking-widest">
+            <p className="mt-3 font-mono text-[11px] tracking-widest text-black/40">
               STAY MODE — CLICK / ESC TO LIFT
             </p>
           )}
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );
