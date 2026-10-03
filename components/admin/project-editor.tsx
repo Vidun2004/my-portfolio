@@ -8,7 +8,8 @@ import { createProject,
   updateProject,
   type ProjectActionState,
 } from "@/app/actions/admin-projects";
-import { MediaPicker } from "@/components/admin/media-picker";
+import { GalleryField } from "@/components/admin/gallery-field";
+import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,6 +28,7 @@ export type EditorInitial = {
   lessons: string;
   features_raw: string;
   hero_image_url: string;
+  gallery_urls_raw: string;
   github_url: string;
   live_url: string;
   featured: boolean;
@@ -48,6 +50,7 @@ const EMPTY: EditorInitial = {
   lessons: "",
   features_raw: "",
   hero_image_url: "",
+  gallery_urls_raw: "",
   github_url: "",
   live_url: "",
   featured: false,
@@ -136,12 +139,7 @@ export function ProjectEditor({
         </Field>
       </div>
       <div className="grid gap-5 md:grid-cols-3">
-        <Field label="HERO IMAGE URL">
-          <div className="flex gap-2">
-            <Input id="hero_image_url" name="hero_image_url" defaultValue={initial.hero_image_url} placeholder="https://…" />
-            <MediaPicker />
-          </div>
-        </Field>
+        <ImageField label="HERO IMAGE" name="hero_image_url" defaultValue={initial.hero_image_url} folder="projects" />
         <Field label="GITHUB URL">
           <Input name="github_url" defaultValue={initial.github_url} placeholder="https://…" />
         </Field>
@@ -149,6 +147,7 @@ export function ProjectEditor({
           <Input name="live_url" defaultValue={initial.live_url} placeholder="https://…" />
         </Field>
       </div>
+      <GalleryField defaultValue={initial.gallery_urls_raw} />
       <div className="grid gap-5 md:grid-cols-3">
         <Field label="STATUS">
           <select name="status" defaultValue={initial.status} className="flex h-10 w-full rounded-base border-2 border-border bg-secondary-background px-3 text-sm font-base">

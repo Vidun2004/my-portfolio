@@ -61,16 +61,20 @@ export type MediaImage = { path: string; url: string };
 export async function listMediaImages(): Promise<MediaImage[]> {
   await requireAdmin();
   const admin = createAdminClient();
+  const folders = await Promise.all(
+    MEDIA_FOLDERS.map((folder) =>
+      admin.storage.from("portfolio").list(folder, { limit: 100 }),
+    ),
+  );
   const out: MediaImage[] = [];
-  for (const folder of MEDIA_FOLDERS) {
-    const { data, error } = await admin.storage.from("portfolio").list(folder, { limit: 100 });
-    if (error) continue;
-    for (const f of data ?? []) {
+  folders.forEach((res, i) => {
+    const folder = MEDIA_FOLDERS[i];
+    for (const f of res.data ?? []) {
       if (!f.name || f.name.startsWith(".") || !/\.(jpg|jpeg|png|webp|svg)$/i.test(f.name)) continue;
       const path = `${folder}/${f.name}`;
       const { data: pub } = admin.storage.from("portfolio").getPublicUrl(path);
       out.push({ path, url: pub.publicUrl });
     }
-  }
+  });
   return out;
 }

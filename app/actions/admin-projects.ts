@@ -24,6 +24,7 @@ const projectSchema = z.object({
   lessons: z.string().trim().default(""),
   features_raw: z.string().default(""),
   hero_image_url: urlOrEmpty.default(""),
+  gallery_urls_raw: z.string().default(""),
   github_url: urlOrEmpty.default(""),
   live_url: urlOrEmpty.default(""),
   featured: z.boolean().default(false),
@@ -48,6 +49,7 @@ function parseForm(formData: FormData) {
     lessons: formData.get("lessons") ?? "",
     features_raw: formData.get("features_raw") ?? "",
     hero_image_url: formData.get("hero_image_url") ?? "",
+    gallery_urls_raw: formData.get("gallery_urls_raw") ?? "",
     github_url: formData.get("github_url") ?? "",
     live_url: formData.get("live_url") ?? "",
     featured: formData.get("featured") === "on",
@@ -68,11 +70,15 @@ export async function createProject(
   const user = await requireAdmin();
   const parsed = parseForm(formData);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
-  const { technology_ids, features_raw, ...fields } = parsed.data;
+  const { technology_ids, features_raw, gallery_urls_raw, ...fields } = parsed.data;
   const features = String(features_raw ?? "")
     .split("\n")
     .map((f) => f.trim())
     .filter(Boolean);
+  const gallery_urls = String(gallery_urls_raw ?? "")
+    .split("\n")
+    .map((u) => u.trim())
+    .filter((u) => /^https?:\/\/.+/.test(u));
   const admin = createAdminClient();
 
   const { data, error } = await admin
@@ -90,6 +96,7 @@ export async function createProject(
       lessons: fields.lessons,
       features,
       hero_image_url: emptyToNull(fields.hero_image_url),
+      gallery_urls,
       github_url: emptyToNull(fields.github_url),
       live_url: emptyToNull(fields.live_url),
       featured: fields.featured,
@@ -125,11 +132,15 @@ export async function updateProject(
   const user = await requireAdmin();
   const parsed = parseForm(formData);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
-  const { technology_ids, features_raw, ...fields } = parsed.data;
+  const { technology_ids, features_raw, gallery_urls_raw, ...fields } = parsed.data;
   const features = String(features_raw ?? "")
     .split("\n")
     .map((f) => f.trim())
     .filter(Boolean);
+  const gallery_urls = String(gallery_urls_raw ?? "")
+    .split("\n")
+    .map((u) => u.trim())
+    .filter((u) => /^https?:\/\/.+/.test(u));
   const admin = createAdminClient();
 
   const { data, error } = await admin
@@ -147,6 +158,7 @@ export async function updateProject(
       lessons: fields.lessons,
       features,
       hero_image_url: emptyToNull(fields.hero_image_url),
+      gallery_urls,
       github_url: emptyToNull(fields.github_url),
       live_url: emptyToNull(fields.live_url),
       featured: fields.featured,

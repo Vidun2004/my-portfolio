@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { saveAbout, type ContentState } from "@/app/actions/admin-content";
+import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -65,10 +66,7 @@ export function AboutEditor({ initial }: { initial: AboutRow }) {
           <label className="font-mono text-xs font-bold">LOCATION</label>
           <Input name="location" defaultValue={initial.location} className="mt-1.5" />
         </div>
-        <div>
-          <label className="font-mono text-xs font-bold">PROFILE IMAGE URL</label>
-          <Input name="profile_image_url" defaultValue={initial.profile_image_url} placeholder="https://…" className="mt-1.5" />
-        </div>
+        <ImageField label="PROFILE IMAGE" name="profile_image_url" defaultValue={initial.profile_image_url} folder="profile" />
       </div>
       <label className="flex items-center gap-2 font-mono text-xs font-bold">
         <input type="checkbox" name="availability" defaultChecked={initial.availability} className="size-4 accent-black" />

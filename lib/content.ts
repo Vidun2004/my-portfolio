@@ -94,6 +94,7 @@ type DbProject = {
   lessons: string;
   features: string[];
   hero_image_url: string | null;
+  gallery_urls: string[];
   github_url: string | null;
   live_url: string | null;
   featured: boolean;
@@ -108,6 +109,7 @@ function toCard(p: DbProject): ProjectCard {
     color: colorFor(p.slug),
     visual: visualFor(p.slug),
     featured: p.featured,
+    ...(p.hero_image_url ? { heroImage: p.hero_image_url } : {}),
   };
 }
 
@@ -116,7 +118,7 @@ export async function getPublicProjects(): Promise<ProjectCard[]> {
     const sb = await createClient();
     const { data, error } = await sb
       .from("projects")
-      .select("id, slug, title, tagline, description, featured")
+      .select("id, slug, title, tagline, description, hero_image_url, featured")
       .eq("status", "published")
       .order("sort_order")
       .order("created_at");
@@ -185,10 +187,12 @@ export async function getPublicProjectDetail(slug: string): Promise<ProjectDetai
       architecture: p.architecture,
       challenges: p.challenges,
       lessons: p.lessons,
+      gallery: p.gallery_urls ?? [],
       tech,
       color: colorFor(p.slug),
       visual: visualFor(p.slug),
       featured: p.featured,
+      ...(p.hero_image_url ? { heroImage: p.hero_image_url } : {}),
       ...(p.github_url ? { githubUrl: p.github_url } : {}),
       ...(p.live_url ? { liveUrl: p.live_url } : {}),
     };

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Navbar } from "@/components/portfolio/navbar";
 import { Footer } from "@/components/portfolio/footer";
@@ -75,6 +76,19 @@ export default async function ProjectPage({
           ))}
         </div>
 
+        {p.heroImage && (
+          <div className="border-ink shadow-brutal-lg rounded-brutal-lg relative mt-8 overflow-hidden border-2">
+            <Image
+              src={p.heroImage}
+              alt={`${p.title} hero`}
+              width={1200}
+              height={675}
+              priority
+              className="h-auto w-full object-cover"
+            />
+          </div>
+        )}
+
         <CaseStory project={p} />
 
         {/* links + screenshots */}
@@ -89,13 +103,29 @@ export default async function ProjectPage({
           </div>
           <div className="border-ink bg-ink text-cream rounded-brutal-md border-2 p-6">
             <h2 className="font-mono text-xs font-bold text-white/50">SCREENSHOTS</h2>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              {[1, 2].map((i) => (
-                <div key={i} className="flex h-20 items-center justify-center rounded-lg border-2 border-dashed border-white/20 font-mono text-xs text-white/40">
-                  {i}/2
-                </div>
-              ))}
-            </div>
+            {p.gallery.length > 0 ? (
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {p.gallery.slice(0, 4).map((src, i) => (
+                  <div key={`${src}-${i}`} className="relative h-28 overflow-hidden rounded-lg border-2 border-white/20">
+                    <Image
+                      src={src}
+                      alt={`${p.title} screenshot ${i + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {[1, 2].map((i) => (
+                  <div key={i} className="flex h-20 items-center justify-center rounded-lg border-2 border-dashed border-white/20 font-mono text-xs text-white/40">
+                    {i}/2
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

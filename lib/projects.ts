@@ -6,6 +6,7 @@ export type ProjectCard = {
   color: string;
   visual: string;
   featured?: boolean;
+  heroImage?: string;
 };
 
 export type ProjectDetail = ProjectCard & {
@@ -17,6 +18,7 @@ export type ProjectDetail = ProjectCard & {
   architecture: string;
   challenges: string;
   lessons: string;
+  gallery: string[];
   liveUrl?: string;
   githubUrl?: string;
 };
@@ -79,6 +81,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       "Modeling flexible audit templates without turning the schema into soup. Solved with a template + response split and strict validation.",
     lessons:
       "Boring data modeling beats clever UI. Getting the audit/item/evidence relations right made every feature easier.",
+    gallery: [],
     githubUrl: "https://github.com",
   },
   "creasy-eco": {
@@ -95,6 +98,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
       "React frontend with a Node.js API and PostgreSQL. Focus on fast catalog reads and simple writes.",
     challenges: "Keeping seller onboarding under 2 minutes while still getting usable data.",
     lessons: "Launch with inquiry instead of full checkout; validate demand first.",
+    gallery: [],
   },
   otflow: {
     ...PROJECTS[2],
@@ -109,6 +113,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     architecture: "Next.js + Supabase: auth, database and row-level security for team visibility.",
     challenges: "Designing states (pending/approved/rejected) that survive real-world exceptions.",
     lessons: "Status machines should be explicit from day one.",
+    gallery: [],
   },
   "pixel-quest": {
     ...PROJECTS[3],
@@ -121,6 +126,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     architecture: "Unity with C#: player, world and system scripts kept separate on purpose.",
     challenges: "Keeping scope tiny enough to finish.",
     lessons: "Finished small beats ambitious unfinished.",
+    gallery: [],
   },
 };
 

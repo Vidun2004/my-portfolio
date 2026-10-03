@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { PROJECTS } from "@/lib/projects";
 import type { ProjectCard } from "@/lib/projects";
 import { Reveal } from "@/components/animation/reveal";
@@ -157,10 +158,25 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className="border-ink bg-white shadow-brutal-lg rounded-brutal-lg grid overflow-hidden border-2 md:grid-cols-2"
             >
-              <div className={cn("flex min-h-64 items-center justify-center overflow-hidden p-10 md:min-h-[420px]", active.color)}>
-                <span ref={visualRef} className="text-center font-mono text-4xl font-bold md:text-6xl">
-                  {active.visual}
-                </span>
+              <div className={cn("relative flex min-h-64 items-center justify-center overflow-hidden p-10 md:min-h-[420px]", active.color)}>
+                {active.heroImage ? (
+                  <>
+                    <Image
+                      src={active.heroImage}
+                      alt={`${active.title} preview`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <span className="border-ink bg-cream relative rounded-full border-2 px-4 py-1.5 font-mono text-xs font-bold">
+                      {active.title}
+                    </span>
+                  </>
+                ) : (
+                  <span ref={visualRef} className="text-center font-mono text-4xl font-bold md:text-6xl">
+                    {active.visual}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col justify-center gap-4 p-6 md:p-10">
                 <p className="font-mono text-xs font-bold text-black/40">

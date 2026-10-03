@@ -112,7 +112,7 @@ export function ProjectsManager({
         onClose={() => setEditing(null)}
         title={editing === "new" ? "New project" : "Edit project"}
         subtitle={typeof editing === "object" && editing !== null ? editing.slug : undefined}
-        wide
+        size="xl"
       >
         {editing === "new" && (
           <ProjectEditor technologies={technologies} onSuccess={closeAndRefresh} />

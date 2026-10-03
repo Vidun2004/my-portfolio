@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { useInView, useReducedMotion } from "motion/react";
 import type Lenis from "lenis";
 import { Reveal } from "@/components/animation/reveal";
@@ -300,7 +301,21 @@ export function About({ profile }: { profile?: AboutProfile }) {
           </div>
         </Reveal>
 
-        <div className="mx-auto mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
+        <div className={cn("mx-auto mt-8 grid gap-4", p.profile_image_url ? "max-w-4xl sm:grid-cols-4" : "max-w-3xl sm:grid-cols-3")}>
+          {p.profile_image_url && (
+            <div className="border-ink bg-white shadow-brutal rounded-brutal-md -rotate-2 border-2 p-2 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg">
+              <div className="relative aspect-square overflow-hidden rounded border-2 border-ink">
+                <Image
+                  src={p.profile_image_url}
+                  alt="Vidun profile photo"
+                  fill
+                  sizes="(max-width: 640px) 100vw, 25vw"
+                  className="object-cover"
+                />
+              </div>
+              <p className="px-1 pt-2 font-mono text-[11px] font-bold tracking-wide">{"{ me }"}</p>
+            </div>
+          )}
           <div className="border-ink bg-brand-blue shadow-brutal rounded-brutal-md rotate-1 border-2 p-4 transition-all duration-300 hover:rotate-0 hover:shadow-brutal-lg">
             <p className="font-mono text-[11px] font-bold tracking-wide">CURRENTLY BUILDING</p>
             <p className="mt-2 text-sm font-bold">{p.currently_building}</p>

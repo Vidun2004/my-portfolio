@@ -16,16 +16,34 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { label: "DASHBOARD", href: "/admin", icon: LayoutDashboard },
-  { label: "PROJECTS", href: "/admin/projects", icon: FolderKanban },
-  { label: "SKILLS", href: "/admin/skills", icon: Shapes },
-  { label: "EXPERIENCE", href: "/admin/experience", icon: Briefcase },
-  { label: "MESSAGES", href: "/admin/messages", icon: Inbox, badge: true },
-  { label: "ABOUT", href: "/admin/about", icon: User },
-  { label: "MEDIA", href: "/admin/media", icon: Image },
-  { label: "ACTIVITY", href: "/admin/activity", icon: Activity },
-  { label: "SETTINGS", href: "/admin/settings", icon: Settings },
+const SECTIONS = [
+  {
+    label: "OVERVIEW",
+    items: [{ label: "DASHBOARD", href: "/admin", icon: LayoutDashboard }],
+  },
+  {
+    label: "CONTENT",
+    items: [
+      { label: "PROJECTS", href: "/admin/projects", icon: FolderKanban },
+      { label: "SKILLS", href: "/admin/skills", icon: Shapes },
+      { label: "EXPERIENCE", href: "/admin/experience", icon: Briefcase },
+      { label: "ABOUT", href: "/admin/about", icon: User },
+    ],
+  },
+  {
+    label: "INBOX",
+    items: [
+      { label: "MESSAGES", href: "/admin/messages", icon: Inbox, badge: true },
+      { label: "ACTIVITY", href: "/admin/activity", icon: Activity },
+    ],
+  },
+  {
+    label: "SYSTEM",
+    items: [
+      { label: "MEDIA", href: "/admin/media", icon: Image },
+      { label: "SETTINGS", href: "/admin/settings", icon: Settings },
+    ],
+  },
 ];
 
 export function AdminSidebar({ email, unread }: { email?: string; unread: number }) {
@@ -55,27 +73,34 @@ export function AdminSidebar({ email, unread }: { email?: string; unread: number
         </span>
       </a>
       {email && <p className="truncate font-mono text-xs text-black/50">{email}</p>}
-      <nav className="mt-4 flex flex-row gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:flex-col md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
-        {NAV.map((n) => (
-          <a
-            key={n.href}
-            href={n.href}
-            aria-current={isActive(n.href) ? "page" : undefined}
-            className={cn(
-              "flex shrink-0 items-center gap-2 rounded-lg border-2 px-3 py-2 font-mono text-sm font-bold transition-all",
-              isActive(n.href)
-                ? "border-ink bg-ink text-cream shadow-brutal"
-                : "border-transparent hover:border-ink hover:bg-cream",
-            )}
-          >
-            <n.icon size={16} strokeWidth={2.5} />
-            {n.label}
-            {n.badge && unread > 0 && (
-              <span className="bg-brand-pink text-ink ml-auto rounded-full border-2 border-current px-1.5 text-[11px]">
-                {unread}
-              </span>
-            )}
-          </a>
+      <nav className="mt-4 flex flex-row gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:flex-col md:gap-4 md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
+        {SECTIONS.map((s) => (
+          <div key={s.label} className="flex shrink-0 flex-row gap-2 md:flex-col md:gap-1">
+            <p className="hidden font-mono text-[10px] font-bold tracking-widest text-black/40 md:block">
+              {s.label}
+            </p>
+            {s.items.map((n) => (
+              <a
+                key={n.href}
+                href={n.href}
+                aria-current={isActive(n.href) ? "page" : undefined}
+                className={cn(
+                  "flex shrink-0 items-center gap-2 rounded-lg border-2 px-3 py-2 font-mono text-sm font-bold transition-all",
+                  isActive(n.href)
+                    ? "border-ink bg-ink text-cream shadow-brutal"
+                    : "border-transparent hover:border-ink hover:bg-cream",
+                )}
+              >
+                <n.icon size={16} strokeWidth={2.5} />
+                {n.label}
+                {"badge" in n && n.badge && unread > 0 && (
+                  <span className="bg-brand-pink text-ink ml-auto rounded-full border-2 border-current px-1.5 text-[11px]">
+                    {unread}
+                  </span>
+                )}
+              </a>
+            ))}
+          </div>
         ))}
       </nav>
       <div className="mt-auto hidden gap-2 pt-4 md:flex">

@@ -13,13 +13,16 @@ export function Modal({
   subtitle,
   children,
   wide = false,
+  size,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   subtitle?: string;
   children: React.ReactNode;
+  /** @deprecated use size="lg" instead */
   wide?: boolean;
+  size?: "md" | "lg" | "xl";
 }) {
   const reduce = useReducedMotion();
   const [mounted, setMounted] = useState(false);
@@ -43,6 +46,8 @@ export function Modal({
   }, [open, onClose]);
 
   if (!mounted) return null;
+
+  const resolved = size ?? (wide ? "lg" : "md");
 
   return createPortal(
     <AnimatePresence>
@@ -69,8 +74,10 @@ export function Modal({
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 380, damping: 32 }}
             className={cn(
-              "border-ink bg-white shadow-brutal-lg rounded-brutal-lg max-h-[88vh] w-full overflow-hidden border-2 outline-none",
-              wide ? "max-w-3xl" : "max-w-xl",
+              "border-ink bg-white shadow-brutal-lg rounded-brutal-lg max-h-[92vh] w-full overflow-hidden border-2 outline-none",
+              resolved === "md" && "max-w-xl",
+              resolved === "lg" && "max-w-3xl",
+              resolved === "xl" && "max-w-5xl",
             )}
           >
             <div className="border-ink flex items-center justify-between gap-4 border-b-2 bg-cream px-5 py-3">
@@ -86,7 +93,7 @@ export function Modal({
                 <X size={18} />
               </button>
             </div>
-            <div className="max-h-[calc(88vh-65px)] overflow-y-auto p-5 md:p-6">{children}</div>
+            <div data-lenis-prevent className="max-h-[calc(92vh-65px)] overflow-y-auto p-5 md:p-6">{children}</div>
           </motion.div>
         </motion.div>
       )}
