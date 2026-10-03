@@ -7,7 +7,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 import type { MouseEvent } from "react";
@@ -77,8 +77,8 @@ export function Hero() {
         {/* Left */}
         <div>
           <motion.div {...enter(0.2)}>
-            <Badge className="bg-success font-mono">
-              <span className="mr-1 inline-block size-2 animate-pulse rounded-full bg-black" />
+            <Badge className="bg-success gap-2 font-mono">
+              <BriefcaseBusiness size={20} />
               available for work
             </Badge>
           </motion.div>
@@ -208,16 +208,6 @@ export function Hero() {
           </motion.div>
           <motion.div
             style={reduce ? undefined : { x: layer2x, y: layer2y }}
-            className="absolute -bottom-7 left-10 z-20"
-          >
-            <Floating distance={7} duration={3} delay={0.8}>
-              <div className="border-ink shadow-brutal rounded-brutal-md border-2 bg-white px-4 py-2 font-mono text-sm font-bold">
-                git • API • DB
-              </div>
-            </Floating>
-          </motion.div>
-          <motion.div
-            style={reduce ? undefined : { x: layer2x, y: layer2y }}
             className="absolute top-1/2 -right-6 z-20 md:-right-10"
           >
             <Floating distance={9} duration={3.8} delay={0.2} rotate={3}>
@@ -226,18 +216,6 @@ export function Hero() {
               </div>
             </Floating>
           </motion.div>
-
-          {/* Status pill */}
-          <Floating
-            className="absolute right-6 -bottom-5 z-20"
-            distance={6}
-            duration={2.8}
-            delay={1}
-          >
-            <div className="border-ink bg-success rounded-full border-2 px-4 py-1.5 font-mono text-sm font-bold">
-              ● Available for freelance
-            </div>
-          </Floating>
         </motion.div>
       </div>
     </section>

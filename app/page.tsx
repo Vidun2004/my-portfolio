@@ -3,6 +3,7 @@ import { Capabilities } from "@/components/portfolio/capabilities";
 import { Contact } from "@/components/portfolio/contact";
 import { Experience } from "@/components/portfolio/experience";
 import { Footer } from "@/components/portfolio/footer";
+import { HashRestorer } from "@/components/portfolio/hash-restorer";
 import { Hero } from "@/components/portfolio/hero";
 import { Navbar } from "@/components/portfolio/navbar";
 import { Projects } from "@/components/portfolio/projects";
@@ -28,6 +29,7 @@ export default async function Home() {
     <div className="bg-cream text-ink relative min-h-screen overflow-x-clip lg:pl-20">
       <Navbar />
       <ScrollDots />
+      <HashRestorer />
       <main className="w-full">
         <Hero />
         <Capabilities />

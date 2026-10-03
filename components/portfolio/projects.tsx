@@ -5,11 +5,11 @@ import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-reac
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PROJECTS } from "@/lib/projects";
 import type { ProjectCard } from "@/lib/projects";
 import { Reveal } from "@/components/animation/reveal";
-import { TransitionLink } from "@/components/animation/page-transition";
+import { LAST_PROJECT_KEY, TransitionLink } from "@/components/animation/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -35,6 +35,25 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
   const [dir, setDir] = useState(1);
   const active = list.find((p) => p.slug === slug) ?? list[0];
   const reduce = useReducedMotion();
+
+  // Restore the case study you came back from (stored by navigate).
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      try {
+        const last = sessionStorage.getItem(LAST_PROJECT_KEY);
+        if (!last || last === slug) return;
+        const a = list.findIndex((p) => p.slug === slug);
+        const b = list.findIndex((p) => p.slug === last);
+        if (b < 0) return;
+        setDir(b > a ? 1 : -1);
+        setSlug(last);
+      } catch {
+        /* ignore */
+      }
+    }, 0);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function go(delta: 1 | -1) {
     if (list.length < 2) return;

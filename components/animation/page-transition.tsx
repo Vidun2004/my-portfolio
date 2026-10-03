@@ -7,22 +7,35 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 
 type Cover = { href: string; title: string; hash: string | null };
 
+export const LAST_PROJECT_KEY = "vidun-last-project";
+
 const TransitionContext = createContext<(href: string, title: string) => void>(() => {});
 
 export const useTransitionNav = () => useContext(TransitionContext);
 
+function scrollToHash(hash: string, attempts = 0) {
+  const lenis = (window as unknown as { __lenis?: Lenis }).__lenis;
+  const el = document.querySelector(hash);
+  if (el) {
+    if (lenis) lenis.scrollTo(el as HTMLElement, { offset: -88, duration: 1.2 });
+    else el.scrollIntoView();
+    return;
+  }
+  // Home sections may not be painted yet when arriving cross-page —
+  // retry briefly instead of dropping to the top.
+  if (attempts < 40) {
+    window.setTimeout(() => scrollToHash(hash, attempts + 1), 50);
+    return;
+  }
+  if (lenis) lenis.scrollTo(0, { immediate: true });
+  else window.scrollTo(0, 0);
+}
+
 function scrollAfterNav(hash: string | null) {
   const lenis = (window as unknown as { __lenis?: Lenis }).__lenis;
   if (hash) {
-    const el = document.querySelector(hash);
-    if (el && lenis) {
-      lenis.scrollTo(el as HTMLElement, { offset: -88, duration: 1.2 });
-      return;
-    }
-    if (el) {
-      el.scrollIntoView();
-      return;
-    }
+    scrollToHash(hash);
+    return;
   }
   if (lenis) lenis.scrollTo(0, { immediate: true });
   else window.scrollTo(0, 0);
@@ -53,6 +66,16 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
         scrollAfterNav(hash);
         return;
       }
+      // Remember the case study being opened so the lineup can
+      // restore it when coming back to /#projects.
+      const caseMatch = href.match(/^\/projects\/([^/#?]+)/);
+      if (caseMatch) {
+        try {
+          sessionStorage.setItem(LAST_PROJECT_KEY, caseMatch[1]);
+        } catch {
+          /* ignore */
+        }
+      }
       pending.current = { href, title, hash };
       setLeaving(false);
       setCover(pending.current);
@@ -71,14 +94,19 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
     if (!leaving) {
       router.push(cover.href);
     } else {
-      const hash = pending.current?.hash ?? null;
+      // Completion fires twice (lift + exit) — only the first may act;
+      // a second firing must not scroll to top with a consumed pending.
+      if (!pending.current) return;
+      const hash = pending.current.hash;
       pending.current = null;
-      // let the new page paint under the curtain first
-      requestAnimationFrame(() => {
-        scrollAfterNav(hash);
+      // Let the new page paint under the curtain first. Cross-page hash
+      // scrolling is owned by HashRestorer on home (mount-guaranteed);
+      // here only reset to top for hash-less arrivals.
+      window.setTimeout(() => {
+        if (!hash) scrollAfterNav(null);
         setCover(null);
         setLeaving(false);
-      });
+      }, 80);
     }
   }
 

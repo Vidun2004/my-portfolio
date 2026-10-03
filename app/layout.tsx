@@ -6,6 +6,7 @@ import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
 import { SmoothScroll } from "@/components/animation/smooth-scroll";
 import { CustomCursor } from "@/components/animation/custom-cursor";
 import { TransitionProvider } from "@/components/animation/page-transition";
+import { SplashScreen } from "@/components/animation/splash-screen";
 
 const sans = Space_Grotesk({
   subsets: ["latin"],
@@ -74,6 +75,7 @@ export default function RootLayout({
         />
         <SmoothScroll>
           <TransitionProvider>{children}</TransitionProvider>
+          <SplashScreen />
         </SmoothScroll>
         <CustomCursor />
       </body>

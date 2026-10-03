@@ -11,13 +11,13 @@ type RevealProps = {
   once?: boolean;
 };
 
-/** Staggered entrance wrapper. Respects prefers-reduced-motion. */
+/** Reversible scroll entrance: plays on entry, reverses on exit, replays on return. Respects prefers-reduced-motion. */
 export function Reveal({
   children,
   delay = 0,
   y = 24,
   className,
-  once = true,
+  once = false,
 }: RevealProps) {
   const reduce = useReducedMotion();
   if (reduce) return <div className={className}>{children}</div>;
