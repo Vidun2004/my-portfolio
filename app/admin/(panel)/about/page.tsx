@@ -10,11 +10,11 @@ export default async function AdminAboutPage() {
     .single();
 
   return (
-    <div className="max-w-3xl">
+    <div>
       <p className="font-mono text-sm text-black/50">MANAGE</p>
       <h1 className="text-4xl font-bold uppercase">About</h1>
       <p className="mt-1 font-mono text-xs text-black/50">Powers the terminal + mini cards on the homepage.</p>
-      <div className="border-ink bg-white shadow-brutal rounded-brutal-md mt-6 border-2 p-6">
+      <div className="border-ink bg-white shadow-brutal rounded-brutal-md mt-6 border-2 p-6 md:p-8">
         <AboutEditor
           initial={{
             headline: (data?.headline as string) ?? "",

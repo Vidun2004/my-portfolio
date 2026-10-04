@@ -24,7 +24,7 @@ function csv(v: string): string[] {
 }
 
 export async function saveAbout(_prev: ContentState, formData: FormData): Promise<ContentState> {
-  await requireAdmin();
+  const user = await requireAdmin();
   const parsed = aboutSchema.safeParse({
     headline: formData.get("headline") ?? "",
     bio: formData.get("bio") ?? "",
@@ -56,20 +56,32 @@ export async function saveAbout(_prev: ContentState, formData: FormData): Promis
     ? await admin.from("about").update(row).eq("id", (existing as { id: string }).id)
     : await admin.from("about").insert(row);
   if (error) return { ok: false, error: "Couldn't save. Did you run migration 0005?" };
+  await admin.from("activity_log").insert({
+    actor: user.email,
+    action: "ABOUT_UPDATED",
+    entity: "about",
+    entity_id: "about",
+  });
   revalidatePath("/");
   return { ok: true };
 }
 
-const SETTING_KEYS = ["site_name", "tagline", "email", "github_url", "linkedin_url"] as const;
+const SETTING_KEYS = ["site_name", "tagline", "email", "github_url", "linkedin_url", "resume_url", "spotify_playlist_url"] as const;
 
 export async function saveSettings(_prev: ContentState, formData: FormData): Promise<ContentState> {
-  await requireAdmin();
+  const user = await requireAdmin();
   const admin = createAdminClient();
   for (const key of SETTING_KEYS) {
     const value = String(formData.get(key) ?? "");
     const { error } = await admin.from("site_settings").upsert({ key, value });
     if (error) return { ok: false, error: "Couldn't save. Did you run migration 0005?" };
   }
+  await admin.from("activity_log").insert({
+    actor: user.email,
+    action: "SETTINGS_UPDATED",
+    entity: "settings",
+    entity_id: "settings",
+  });
   revalidatePath("/", "layout");
   revalidatePath("/");
   return { ok: true };

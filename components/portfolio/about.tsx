@@ -13,19 +13,6 @@ type Line =
   | { kind: "out"; text: string }
   | { kind: "chips"; items: string[] };
 
-const FALLBACK: AboutProfile = {
-  headline: "Who's behind the code?",
-  bio: "vidun — software engineering student. human. ships software.",
-  interests: [],
-  currently_building: "production applications",
-  currently_learning: "AI · systems · game dev",
-  likes: ["clean architecture", "good ux", "automation"],
-  profile_image_url: null,
-  location: "",
-  availability: true,
-  email: "hello@vidun.dev",
-};
-
 function buildScript(p: AboutProfile): Line[] {
   return [
     { kind: "cmd", text: "whoami" },
@@ -140,8 +127,8 @@ function RenderLine({ line }: { line: Line }) {
 }
 
 export function About({ profile }: { profile?: AboutProfile }) {
-  const p = profile ?? FALLBACK;
-  const script = useMemo(() => buildScript(p), [p]);
+  const p = profile;
+  const script = useMemo(() => (p ? buildScript(p) : []), [p]);
 
   const termRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -206,7 +193,10 @@ export function About({ profile }: { profile?: AboutProfile }) {
     if (el) el.scrollTop = el.scrollHeight;
   }, [done, chars, entries]);
 
+  if (!p) return null;
+
   function submit() {
+    if (!p) return;
     const cmd = value.trim();
     if (!cmd) return;
     const res = runCommand(cmd, p);

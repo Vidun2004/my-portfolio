@@ -47,22 +47,38 @@ function toRow(d: z.infer<typeof expSchema>) {
 }
 
 export async function createExperience(_prev: ExpActionState, formData: FormData): Promise<ExpActionState> {
-  await requireAdmin();
+  const user = await requireAdmin();
   const parsed = parse(formData);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
-  const { error } = await createAdminClient().from("experiences").insert(toRow(parsed.data));
-  if (error) return { ok: false, error: "Couldn't create entry." };
+  const admin = createAdminClient();
+  const { data, error } = await admin.from("experiences").insert(toRow(parsed.data)).select("id").single();
+  if (error || !data) return { ok: false, error: "Couldn't create entry." };
+  await admin.from("activity_log").insert({
+    actor: user.email,
+    action: "EXPERIENCE_CREATED",
+    entity: "experience",
+    entity_id: data.id,
+  });
   revalidatePath("/admin/experience");
+  revalidatePath("/");
   return { ok: true };
 }
 
 export async function updateExperience(id: string, _prev: ExpActionState, formData: FormData): Promise<ExpActionState> {
-  await requireAdmin();
+  const user = await requireAdmin();
   const parsed = parse(formData);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
-  const { error } = await createAdminClient().from("experiences").update(toRow(parsed.data)).eq("id", id);
+  const admin = createAdminClient();
+  const { error } = await admin.from("experiences").update(toRow(parsed.data)).eq("id", id);
   if (error) return { ok: false, error: "Couldn't update entry." };
+  await admin.from("activity_log").insert({
+    actor: user.email,
+    action: "EXPERIENCE_UPDATED",
+    entity: "experience",
+    entity_id: id,
+  });
   revalidatePath("/admin/experience");
+  revalidatePath("/");
   return { ok: true };
 }
 
@@ -71,5 +87,6 @@ export async function deleteExperience(id: string): Promise<ExpActionState> {
   const { error } = await createAdminClient().from("experiences").delete().eq("id", id);
   if (error) return { ok: false, error: "Couldn't delete entry." };
   revalidatePath("/admin/experience");
+  revalidatePath("/");
   return { ok: true };
 }

@@ -12,9 +12,10 @@ const ALLOWED: Record<string, string> = {
   "image/webp": "webp",
   "image/svg+xml": "svg",
   "application/pdf": "pdf",
+  "audio/mpeg": "mp3",
 };
 
-const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_BYTES = 12 * 1024 * 1024;
 
 export type MediaState = { ok: boolean; error?: string; url?: string };
 
@@ -27,7 +28,7 @@ export async function uploadMedia(_prev: MediaState, formData: FormData): Promis
   if (!(file instanceof File) || file.size === 0) return { ok: false, error: "Choose a file." };
   const ext = ALLOWED[file.type];
   if (!ext) return { ok: false, error: "Only JPG, PNG, WEBP, SVG or PDF." };
-  if (file.size > MAX_BYTES) return { ok: false, error: "Max file size is 5MB." };
+  if (file.size > MAX_BYTES) return { ok: false, error: "Max file size is 12MB." };
 
   const admin = createAdminClient();
   const path = `${folder}/${randomUUID()}.${ext}`;

@@ -8,13 +8,11 @@ import { TransitionLink } from "@/components/animation/page-transition";
 import { CaseStory } from "@/components/portfolio/case-story";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PROJECTS } from "@/lib/projects";
 import { getPublicProjectDetail, getPublicProjectSlugs, getSettings } from "@/lib/content";
 
 export async function generateStaticParams() {
   const dbSlugs = await getPublicProjectSlugs();
-  const slugs = new Set([...PROJECTS.map((p) => p.slug), ...dbSlugs]);
-  return [...slugs].map((slug) => ({ slug }));
+  return [...new Set(dbSlugs)].map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -53,12 +51,11 @@ export default async function ProjectPage({
 
   const dbSlugs = await getPublicProjectSlugs();
   const settings = await getSettings();
-  const order = [...new Set([...PROJECTS.map((x) => x.slug), ...dbSlugs])];
+  const order = [...new Set([...dbSlugs, slug])];
   const at = order.indexOf(slug);
   const prev = order[(at - 1 + order.length) % order.length];
   const next = order[(at + 1) % order.length];
-  const titleOf = (s: string) =>
-    PROJECTS.find((x) => x.slug === s)?.title ?? s.replace(/-/g, " ").toUpperCase();
+  const titleOf = (s: string) => s.replace(/-/g, " ").toUpperCase();
 
   return (
     <div className="bg-cream text-ink min-h-screen lg:pl-20">
@@ -158,6 +155,7 @@ export default async function ProjectPage({
         email={settings?.email}
         github={settings?.github_url}
         linkedin={settings?.linkedin_url}
+        resumeUrl={settings?.resume_url}
       />
     </div>
   );

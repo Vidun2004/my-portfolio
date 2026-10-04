@@ -7,6 +7,8 @@ import { SmoothScroll } from "@/components/animation/smooth-scroll";
 import { CustomCursor } from "@/components/animation/custom-cursor";
 import { TransitionProvider } from "@/components/animation/page-transition";
 import { SplashScreen } from "@/components/animation/splash-screen";
+import { CdPlayer } from "@/components/portfolio/cd-player";
+import { getPublicTracks, getSettings } from "@/lib/content";
 
 const sans = Space_Grotesk({
   subsets: ["latin"],
@@ -61,11 +63,12 @@ const personJsonLd = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [tracks, settings] = await Promise.all([getPublicTracks(), getSettings()]);
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body className="font-sans antialiased">
@@ -77,6 +80,7 @@ export default function RootLayout({
           <TransitionProvider>{children}</TransitionProvider>
           <SplashScreen />
         </SmoothScroll>
+        <CdPlayer tracks={tracks} spotifyUrl={settings?.spotify_playlist_url} />
         <CustomCursor />
       </body>
     </html>

@@ -3,15 +3,17 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import type Lenis from "lenis";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { label: "BUILD", href: "#about" },
-  { label: "STACK", href: "#skills" },
-  { label: "WORK", href: "#projects" },
-  { label: "JOURNEY", href: "#experience" },
+  { label: "BUILD", href: "#about", n: "01" },
+  { label: "STACK", href: "#skills", n: "02" },
+  { label: "WORK", href: "#projects", n: "03" },
+  { label: "JOURNEY", href: "#experience", n: "04" },
 ];
+
+const ALL = [...LINKS, { label: "SAY HI", href: "#contact", n: "05" }];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,6 +26,19 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Lock scroll while the full-screen menu is open.
+  useEffect(() => {
+    if (!open) return;
+    const lenis = (window as unknown as { __lenis?: Lenis }).__lenis;
+    lenis?.stop();
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      lenis?.start();
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   return (
     <>
@@ -55,35 +70,61 @@ export function Navbar() {
           <button
             className="border-ink bg-white rounded-lg border-2 p-2"
             onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </nav>
+      </motion.header>
 
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-              className="border-ink bg-white shadow-brutal rounded-brutal-md mx-auto mt-2 max-w-6xl border-2 p-2"
-            >
-              {[...LINKS, { label: "SAY HI", href: "#contact" }].map((l) => (
-                <a
+      {/* Full-screen menu takeover: mobile + tablet only */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: "-4%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, y: "-4%" }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="bg-cream fixed inset-0 z-40 flex flex-col justify-center px-8 lg:hidden"
+          >
+            <p className="font-mono text-xs font-bold tracking-widest text-black/40">
+              VIDUN.DEV — PICK A SECTION
+            </p>
+            <nav className="mt-4 flex flex-col">
+              {ALL.map((l, i) => (
+                <motion.a
                   key={l.href + l.label}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  className="block rounded-lg px-4 py-3 font-mono text-sm font-bold hover:bg-black/5"
+                  initial={reduce ? { opacity: 0 } : { opacity: 0, x: -32 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0 }}
+                  transition={{ duration: 0.3, delay: reduce ? 0 : 0.08 + i * 0.06 }}
+                  className={cn(
+                    "group flex items-baseline gap-4 border-b-2 border-dashed border-ink/20 py-4",
+                    l.label === "SAY HI" && "border-none",
+                  )}
                 >
-                  {l.label}
-                </a>
+                  <span className="font-mono text-sm font-bold text-black/40">{l.n}</span>
+                  <span
+                    className={cn(
+                      "text-5xl font-bold tracking-tight uppercase transition-all group-hover:-translate-y-0.5",
+                      l.label === "SAY HI" &&
+                        "border-ink bg-brand-yellow shadow-brutal rounded-brutal-md mt-2 border-2 px-5 py-2",
+                    )}
+                  >
+                    {l.label}
+                  </span>
+                </motion.a>
               ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.header>
+            </nav>
+            <p className="mt-8 font-mono text-[11px] font-bold tracking-widest text-black/40">
+              {"{ built with curiosity }"}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Left rail: desktop only */}
       <motion.aside

@@ -65,12 +65,6 @@ export function Contact() {
               something.
             </h2>
           </div>
-          <div className="flex gap-2 font-mono text-xs font-bold">
-            <a href="mailto:hello@vidun.dev" className="border-ink bg-white shadow-brutal rounded-brutal-md border-2 px-3 py-1.5 hover:-translate-y-0.5 hover:shadow-brutal-lg transition-all">
-              hello@vidun.dev
-            </a>
-            <span className="border-ink bg-success rounded-full border-2 px-3 py-1.5">● ONLINE</span>
-          </div>
         </Reveal>
 
         <Reveal delay={0.1}>

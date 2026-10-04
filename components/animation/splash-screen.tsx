@@ -59,7 +59,7 @@ export function SplashScreen() {
     // Stay mode pins the splash for editing — lift manually.
     if (stay) return;
 
-    const lift = window.setTimeout(() => setLeaving(true), 950);
+    const lift = window.setTimeout(() => setLeaving(true), 1500);
     return () => window.clearTimeout(lift);
   }, [reduce, show, stay]);
 
@@ -107,13 +107,15 @@ export function SplashScreen() {
       >
         <motion.div
           initial={{ scale: 2.4, rotate: -4, opacity: 0 }}
-          animate={{ scale: 1, rotate: -4, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 22 }}
-          className="border-ink bg-cream shadow-brutal-lg rounded-brutal-lg max-w-md border-[3px] px-8 py-6 text-center"
+          animate={{ scale: 1, rotate: -4, opacity: 1, x: [0, 0, -5, 5, 0] }}
+          transition={{
+            scale: { type: "spring", stiffness: 300, damping: 22 },
+            rotate: { type: "spring", stiffness: 300, damping: 22 },
+            opacity: { duration: 0.15 },
+            x: { delay: 0.65, duration: 0.22 },
+          }}
+          className="border-ink bg-cream shadow-brutal-lg rounded-brutal-lg relative max-w-md border-[3px] px-8 py-6 text-center"
         >
-          <p className="border-ink bg-brand-yellow inline-block rounded-full border-2 px-3 py-0.5 font-mono text-[11px] font-bold tracking-widest">
-            PORTFOLIO 2026
-          </p>
           <p className="mt-3 font-mono text-3xl font-bold uppercase md:text-5xl">
             {"{ vidun.dev }"}
           </p>
@@ -144,6 +146,15 @@ export function SplashScreen() {
               STAY MODE — CLICK / ESC TO LIFT
             </p>
           )}
+          <motion.div
+            aria-hidden
+            initial={{ scale: 2.2, rotate: 8, opacity: 0 }}
+            animate={{ scale: 1, rotate: 6, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 420, damping: 19, delay: 0.65 }}
+            className="border-ink bg-success shadow-brutal absolute -right-5 -bottom-5 rounded-md border-[3px] px-4 py-1.5 font-mono text-lg font-bold tracking-widest"
+          >
+            ✓ APPROVED
+          </motion.div>
         </motion.div>
       </motion.div>
     </div>

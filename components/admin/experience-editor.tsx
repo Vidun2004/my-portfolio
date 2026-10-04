@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { createExperience, updateExperience, type ExpActionState } from "@/app/actions/admin-experience";
+import { useActionToast } from "@/components/admin/use-action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +25,7 @@ export function ExperienceEditor({ id, initial, onSuccess }: { id?: string; init
   const action = id ? updateExperience.bind(null, id) : createExperience;
   const [submitted, setSubmitted] = useState(false);
   const [state, formAction, pending] = useActionState<ExpActionState, FormData>(action, { ok: true });
+  useActionToast(state, submitted, pending, null);
 
   useEffect(() => {
     if (submitted && state.ok && !pending) {
@@ -77,7 +79,6 @@ export function ExperienceEditor({ id, initial, onSuccess }: { id?: string; init
           <Input name="sort_order" type="number" defaultValue={initial?.sort_order ?? 0} className="mt-1.5" />
         </div>
       </div>
-      {state.error && <p className="font-mono text-xs text-red-600">{state.error}</p>}
       <Button type="submit" size="lg" disabled={pending} className="font-mono">
         {pending ? <><Loader2 size={18} className="animate-spin" /> SAVING…</> : id ? "SAVE CHANGES" : "CREATE ENTRY"}
       </Button>

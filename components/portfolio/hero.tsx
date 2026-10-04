@@ -7,7 +7,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { ArrowRight, BriefcaseBusiness } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 import type { MouseEvent } from "react";
@@ -20,7 +20,7 @@ import { Floating } from "@/components/animation/floating";
  * left = headline + CTAs, right = profile composition + floating dev stickers.
  * Mouse parallax is desktop-only, max ~12px, disabled on reduced motion.
  */
-export function Hero() {
+export function Hero({ available = true }: { available?: boolean }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0);
@@ -77,9 +77,9 @@ export function Hero() {
         {/* Left */}
         <div>
           <motion.div {...enter(0.2)}>
-            <Badge className="bg-success gap-2 font-mono">
+            <Badge className={available ? "bg-success gap-2 font-mono" : "bg-brand-yellow gap-2 font-mono"}>
               <BriefcaseBusiness size={20} />
-              available for work
+              {available ? "available for work" : "busy building"}
             </Badge>
           </motion.div>
           <motion.p
@@ -115,6 +115,17 @@ export function Hero() {
               <Button size="lg" variant="neutral" className="font-mono">
                 LET&apos;S TALK
               </Button>
+            </a>
+          </motion.div>
+          <motion.div {...enter(0.65)}>
+            <a
+              href="#build"
+              className="border-ink bg-white shadow-brutal rounded-full mt-6 inline-flex items-center gap-2 border-2 px-4 py-2 font-mono text-xs font-bold tracking-widest transition-all hover:-translate-y-0.5 hover:shadow-brutal-lg"
+            >
+              <span className="bg-brand-yellow flex size-5 items-center justify-center rounded-full border-2 border-ink">
+                <ChevronDown size={12} strokeWidth={3} className="animate-bounce" />
+              </span>
+              START THE JOURNEY
             </a>
           </motion.div>
         </div>

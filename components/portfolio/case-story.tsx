@@ -16,6 +16,7 @@ export function CaseStory({ project }: { project: ProjectDetail }) {
     { label: "SOLUTION", body: project.solution },
     { label: "FEATURES", list: project.features },
     { label: "ARCHITECTURE", body: project.architecture },
+    { label: "RESULTS", list: project.results, check: true },
     { label: "CHALLENGES", body: project.challenges },
     { label: "LESSONS LEARNED", body: project.lessons },
   ].filter((c) => ("list" in c ? (c.list as string[])?.length : c.body));
@@ -81,11 +82,24 @@ export function CaseStory({ project }: { project: ProjectDetail }) {
               </p>
               <h2 className="mt-1 text-3xl font-bold uppercase md:text-4xl">{c.label}</h2>
               {"list" in c && (c.list as string[])?.length ? (
-                <ul className="mt-4 list-disc space-y-2 pl-5 text-black/80">
-                  {(c.list as string[]).map((f) => (
-                    <li key={f}>{f}</li>
-                  ))}
-                </ul>
+                "check" in c ? (
+                  <ul className="mt-4 space-y-2.5">
+                    {(c.list as string[]).map((f) => (
+                      <li key={f} className="flex items-start gap-2.5 text-black/80">
+                        <span className="border-ink bg-success mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 font-mono text-[11px] font-bold">
+                          ✓
+                        </span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <ul className="mt-4 list-disc space-y-2 pl-5 text-black/80">
+                    {(c.list as string[]).map((f) => (
+                      <li key={f}>{f}</li>
+                    ))}
+                  </ul>
+                )
               ) : (
                 <p className="mt-4 leading-relaxed text-black/80">{(c as { body: string }).body}</p>
               )}

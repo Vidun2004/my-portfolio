@@ -1,1 +1,1 @@
-export const MEDIA_FOLDERS = ["profile", "projects", "screenshots", "documents"] as const;
+export const MEDIA_FOLDERS = ["profile", "projects", "screenshots", "documents", "audio"] as const;

@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useMotionValue, useSpring } from "motion/react";
+import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useEffect, useState } from "react";
+import { bassLevel } from "@/lib/audio-meter";
 
 /**
  * Neobrutalist custom cursor: ink dot that pops into a labeled
@@ -19,6 +20,8 @@ export function CustomCursor() {
   const y = useMotionValue(-100);
   const sx = useSpring(x, { stiffness: 1200, damping: 60, mass: 0.3 });
   const sy = useSpring(y, { stiffness: 1200, damping: 60, mass: 0.3 });
+  const level = useMotionValue(0);
+  const pulse = useTransform(level, (v) => 1 + Math.min(1, v) * 0.85);
 
   useEffect(() => {
     if (
@@ -26,7 +29,7 @@ export function CustomCursor() {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     )
       return;
-    setEnabled(true);
+    const t = window.setTimeout(() => setEnabled(true), 0);
     document.documentElement.classList.add("has-custom-cursor");
 
     function move(e: MouseEvent) {
@@ -48,13 +51,21 @@ export function CustomCursor() {
     window.addEventListener("mousemove", move, { passive: true });
     window.addEventListener("mousedown", down);
     window.addEventListener("mouseup", up);
+    let raf = 0;
+    const sample = () => {
+      level.set(bassLevel());
+      raf = requestAnimationFrame(sample);
+    };
+    raf = requestAnimationFrame(sample);
     return () => {
+      window.clearTimeout(t);
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mousedown", down);
       window.removeEventListener("mouseup", up);
+      cancelAnimationFrame(raf);
       document.documentElement.classList.remove("has-custom-cursor");
     };
-  }, [x, y]);
+  }, [x, y, level]);
 
   if (!enabled) return null;
 
@@ -77,7 +88,8 @@ export function CustomCursor() {
         transition={{ type: "spring", stiffness: 450, damping: 30 }}
         className="-translate-x-1/2 -translate-y-1/2"
       >
-        <span
+        <motion.span
+          style={{ scale: pulse }}
           className={
             "flex h-full w-full items-center justify-center rounded-full border-2 font-mono text-[11px] font-bold " +
             (label || hovering
@@ -88,7 +100,7 @@ export function CustomCursor() {
           }
         >
           {label}
-        </span>
+        </motion.span>
       </motion.div>
     </motion.div>
   );

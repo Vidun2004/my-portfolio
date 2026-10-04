@@ -31,6 +31,7 @@ export default async function AdminProjectsPage() {
     features_raw: ((p.features as string[]) ?? []).join("\n"),
     hero_image_url: (p.hero_image_url as string) ?? "",
     gallery_urls_raw: ((p.gallery_urls as string[]) ?? []).join("\n"),
+    results_raw: ((p.results as string[]) ?? []).join("\n"),
     github_url: (p.github_url as string) ?? "",
     live_url: (p.live_url as string) ?? "",
     featured: (p.featured as boolean) ?? false,

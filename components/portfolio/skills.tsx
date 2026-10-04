@@ -33,28 +33,6 @@ const FILTERS: { id: Category | "all"; label: string }[] = [
   { id: "tools", label: "TOOLS" },
 ];
 
-const SKILLS: Skill[] = [
-  { name: "TypeScript", cat: "languages", desc: "Main language for web apps.", level: 90, color: "bg-brand-blue" },
-  { name: "Python", cat: "languages", desc: "Scripting, backends, experiments.", level: 75, color: "bg-brand-blue" },
-  { name: "C", cat: "languages", desc: "Systems fundamentals.", level: 65, color: "bg-brand-blue" },
-  { name: "C++", cat: "languages", desc: "DSA + game logic.", level: 65, color: "bg-brand-blue" },
-  { name: "C#", cat: "languages", desc: "Unity game dev.", level: 60, color: "bg-brand-blue" },
-  { name: "React", cat: "frontend", desc: "Component UI I reach for first.", level: 88, color: "bg-brand-yellow" },
-  { name: "Next.js", cat: "frontend", desc: "App Router, SSR, full-stack.", level: 85, color: "bg-brand-yellow" },
-  { name: "Tailwind", cat: "frontend", desc: "Rapid neobrutalist styling.", level: 90, color: "bg-brand-yellow" },
-  { name: "Node.js", cat: "backend", desc: "APIs and server logic.", level: 80, color: "bg-brand-teal" },
-  { name: "Auth", cat: "backend", desc: "Sessions, RLS, secure flows.", level: 75, color: "bg-brand-teal" },
-  { name: "REST APIs", cat: "backend", desc: "Designing clean endpoints.", level: 82, color: "bg-brand-teal" },
-  { name: "React Native", cat: "mobile", desc: "Cross-platform mobile apps.", level: 78, color: "bg-brand-yellow" },
-  { name: "Expo", cat: "mobile", desc: "Fast mobile iteration.", level: 72, color: "bg-brand-yellow" },
-  { name: "PostgreSQL", cat: "database", desc: "Relational modeling + queries.", level: 80, color: "bg-brand-pink" },
-  { name: "Supabase", cat: "database", desc: "Auth, DB, storage backend.", level: 82, color: "bg-brand-pink" },
-  { name: "Prisma", cat: "database", desc: "Type-safe DB access.", level: 76, color: "bg-brand-pink" },
-  { name: "Git", cat: "tools", desc: "Branching, PRs, history.", level: 88, color: "bg-white" },
-  { name: "Docker", cat: "tools", desc: "Containers for dev + deploy.", level: 70, color: "bg-white" },
-  { name: "Linux", cat: "tools", desc: "Daily driver + servers.", level: 78, color: "bg-white" },
-];
-
 const TILTS = ["-rotate-2", "rotate-1", "rotate-2", "-rotate-1"];
 
 /** Real brand glyphs drifting behind the cards — ambient, seamless. */
@@ -202,7 +180,7 @@ function Ticker({ items, reverse = false }: { items: string[]; reverse?: boolean
 export function Skills({ items }: { items?: SkillItem[] }) {
   const [active, setActive] = useState<Category | "all">("all");
   const reduce = useReducedMotion();
-  const all = items?.length ? items : SKILLS;
+  const all = items ?? [];
   const filtered = active === "all" ? all : all.filter((s) => s.cat === active);
   const tickerItems = all.map((s) => s.name.toUpperCase());
   const sectionRef = useRef<HTMLElement>(null);
@@ -275,7 +253,14 @@ export function Skills({ items }: { items?: SkillItem[] }) {
       </Reveal>
 
       <div className="relative mx-auto w-full max-w-7xl px-6 md:px-10">
-        {/* Filters */}
+        {all.length === 0 ? (
+          <div className="border-ink bg-white shadow-brutal rounded-brutal-md mt-10 border-2 p-10 text-center">
+            <p className="font-mono text-sm font-bold">TOOLBOX EMPTY.</p>
+            <p className="mt-2 font-mono text-xs text-black/50">Skills are added from the admin panel.</p>
+          </div>
+        ) : (
+          <>
+            {/* Filters */}
         <Reveal delay={0.15}>
           <div className="mt-10 flex flex-wrap gap-2">
             {FILTERS.map((f) => (
@@ -341,6 +326,8 @@ export function Skills({ items }: { items?: SkillItem[] }) {
             ))}
           </AnimatePresence>
         </motion.div>
+          </>
+        )}
       </div>
     </section>
   );

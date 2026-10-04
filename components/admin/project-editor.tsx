@@ -10,6 +10,7 @@ import { createProject,
 } from "@/app/actions/admin-projects";
 import { GalleryField } from "@/components/admin/gallery-field";
 import { ImageField } from "@/components/admin/image-field";
+import { useActionToast } from "@/components/admin/use-action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +30,7 @@ export type EditorInitial = {
   features_raw: string;
   hero_image_url: string;
   gallery_urls_raw: string;
+  results_raw: string;
   github_url: string;
   live_url: string;
   featured: boolean;
@@ -51,6 +53,7 @@ const EMPTY: EditorInitial = {
   features_raw: "",
   hero_image_url: "",
   gallery_urls_raw: "",
+  results_raw: "",
   github_url: "",
   live_url: "",
   featured: false,
@@ -86,6 +89,7 @@ export function ProjectEditor({
     action,
     { ok: true },
   );
+  useActionToast(state, submitted, pending, null);
 
   useEffect(() => {
     if (submitted && state.ok && !pending) {
@@ -148,6 +152,9 @@ export function ProjectEditor({
         </Field>
       </div>
       <GalleryField defaultValue={initial.gallery_urls_raw} />
+      <Field label="RESULTS (one per line → outcomes with check marks)">
+        <Textarea name="results_raw" rows={3} defaultValue={initial.results_raw} placeholder={"Shipped to 40 users\nCut approval time in half"} />
+      </Field>
       <div className="grid gap-5 md:grid-cols-3">
         <Field label="STATUS">
           <select name="status" defaultValue={initial.status} className="flex h-10 w-full rounded-base border-2 border-border bg-secondary-background px-3 text-sm font-base">
@@ -188,7 +195,6 @@ export function ProjectEditor({
         )}
       </div>
 
-      {state.error && <p className="font-mono text-xs text-red-600">{state.error}</p>}
       <Button type="submit" size="lg" disabled={pending} className="font-mono">
         {pending ? <><Loader2 size={18} className="animate-spin" /> SAVING…</> : id ? "SAVE CHANGES" : "CREATE PROJECT"}
       </Button>

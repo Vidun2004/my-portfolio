@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { PROJECTS, getProject, type ProjectCard, type ProjectDetail } from "@/lib/projects";
+import type { ProjectCard, ProjectDetail } from "@/lib/projects";
 
 const COLORS = ["bg-brand-blue", "bg-brand-teal", "bg-brand-yellow", "bg-brand-pink"] as const;
 
@@ -37,6 +37,33 @@ export type JourneyStep = {
   tech: string[];
   color: string;
 };
+
+export type Testimonial = {
+  name: string;
+  role: string;
+  quote: string;
+};
+
+export type Track = {
+  title: string;
+  artist: string;
+  audio_url: string;
+};
+
+export async function getPublicTracks(): Promise<Track[]> {
+  try {
+    const sb = await createClient();
+    const { data, error } = await sb
+      .from("tracks")
+      .select("title, artist, audio_url")
+      .order("sort_order")
+      .order("created_at");
+    if (error || !data?.length) return [];
+    return (data as unknown as Track[]).filter((t) => !!t.audio_url);
+  } catch {
+    return [];
+  }
+}
 
 export type AboutProfile = {
   headline: string;
@@ -95,6 +122,7 @@ type DbProject = {
   features: string[];
   hero_image_url: string | null;
   gallery_urls: string[];
+  results: string[];
   github_url: string | null;
   live_url: string | null;
   featured: boolean;
@@ -110,6 +138,8 @@ function toCard(p: DbProject): ProjectCard {
     visual: visualFor(p.slug),
     featured: p.featured,
     ...(p.hero_image_url ? { heroImage: p.hero_image_url } : {}),
+    ...(p.github_url ? { githubUrl: p.github_url } : {}),
+    ...(p.live_url ? { liveUrl: p.live_url } : {}),
   };
 }
 
@@ -118,11 +148,11 @@ export async function getPublicProjects(): Promise<ProjectCard[]> {
     const sb = await createClient();
     const { data, error } = await sb
       .from("projects")
-      .select("id, slug, title, tagline, description, hero_image_url, featured")
+      .select("id, slug, title, tagline, description, hero_image_url, github_url, live_url, featured")
       .eq("status", "published")
       .order("sort_order")
       .order("created_at");
-    if (error || !data?.length) return PROJECTS;
+    if (error || !data?.length) return [];
     const ids = data.map((p) => p.id);
     const { data: links } = await sb
       .from("project_technologies")
@@ -143,7 +173,7 @@ export async function getPublicProjects(): Promise<ProjectCard[]> {
       tech: techByProject.get(p.id) ?? [],
     }));
   } catch {
-    return PROJECTS;
+    return [];
   }
 }
 
@@ -166,7 +196,7 @@ export async function getPublicProjectDetail(slug: string): Promise<ProjectDetai
       .eq("slug", slug)
       .eq("status", "published")
       .single();
-    if (error || !data) return getProject(slug);
+    if (error || !data) return undefined;
     const p = data as unknown as DbProject;
     const { data: links } = await sb
       .from("project_technologies")
@@ -188,6 +218,7 @@ export async function getPublicProjectDetail(slug: string): Promise<ProjectDetai
       challenges: p.challenges,
       lessons: p.lessons,
       gallery: p.gallery_urls ?? [],
+      results: p.results ?? [],
       tech,
       color: colorFor(p.slug),
       visual: visualFor(p.slug),
@@ -197,7 +228,7 @@ export async function getPublicProjectDetail(slug: string): Promise<ProjectDetai
       ...(p.live_url ? { liveUrl: p.live_url } : {}),
     };
   } catch {
-    return getProject(slug);
+    return undefined;
   }
 }
 
@@ -221,6 +252,21 @@ export async function getPublicSkills(): Promise<SkillItem[] | undefined> {
     );
   } catch {
     return undefined;
+  }
+}
+
+export async function getPublicTestimonials(): Promise<Testimonial[]> {
+  try {
+    const sb = await createClient();
+    const { data, error } = await sb
+      .from("testimonials")
+      .select("name, role, quote")
+      .order("sort_order")
+      .order("created_at");
+    if (error || !data?.length) return [];
+    return data as unknown as Testimonial[];
+  } catch {
+    return [];
   }
 }
 

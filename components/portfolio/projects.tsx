@@ -1,13 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
 import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
+import type { MouseEvent } from "react";
 import Image from "next/image";
-import { PROJECTS } from "@/lib/projects";
 import type { ProjectCard } from "@/lib/projects";
 import { Reveal } from "@/components/animation/reveal";
 import { LAST_PROJECT_KEY, TransitionLink } from "@/components/animation/page-transition";
@@ -30,9 +30,11 @@ function TechRow({ tech }: { tech: string[] }) {
 }
 
 export function Projects({ items }: { items?: ProjectCard[] }) {
-  const list = items?.length ? items : PROJECTS;
+  const list = items ?? [];
   const lineup = list.slice(0, 4);
-  const [slug, setSlug] = useState(list.find((p) => p.featured)?.slug ?? list[0]?.slug);
+  const [slug, setSlug] = useState<string | undefined>(
+    list.find((p) => p.featured)?.slug ?? list[0]?.slug,
+  );
   const [dir, setDir] = useState(1);
   const active = list.find((p) => p.slug === slug) ?? list[0];
   const reduce = useReducedMotion();
@@ -73,6 +75,41 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
 
   const sectionRef = useRef<HTMLElement>(null);
   const visualRef = useRef<HTMLSpanElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [hov, setHov] = useState(false);
+
+  // 3D tilt + glare: cursor-tracked, desktop only.
+  const px = useMotionValue(0.5);
+  const py = useMotionValue(0.5);
+  const rY = useSpring(useTransform(px, [0, 1], [9, -9]), { stiffness: 180, damping: 20 });
+  const rX = useSpring(useTransform(py, [0, 1], [-7, 7]), { stiffness: 180, damping: 20 });
+  const gx = useTransform(px, (v) => v * 100);
+  const gy = useTransform(py, (v) => v * 100);
+  const glare = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.32), transparent 55%)`;
+  const [fine, setFine] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: fine)");
+    const update = () => setFine(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const tiltOn = !reduce && fine;
+
+  function onTilt(e: MouseEvent) {
+    if (!tiltOn || !stageRef.current) return;
+    const r = stageRef.current.getBoundingClientRect();
+    px.set((e.clientX - r.left) / r.width);
+    py.set((e.clientY - r.top) / r.height);
+  }
+
+  function resetTilt() {
+    px.set(0.5);
+    py.set(0.5);
+    setHov(false);
+  }
 
   useGSAP(
     () => {
@@ -96,7 +133,28 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
     { scope: sectionRef },
   );
 
-  if (!active) return null;
+  if (!active) {
+    return (
+      <section id="projects" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
+        <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
+          <Reveal className="max-w-2xl">
+            <p className="font-mono text-sm text-black/50">
+              Some experiments became products. Some products became lessons.
+            </p>
+            <h2 className="mt-2 text-4xl font-bold tracking-tight uppercase md:text-6xl">
+              Things I&apos;ve built
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div className="border-ink bg-white shadow-brutal rounded-brutal-md mt-10 border-2 p-10 text-center">
+              <p className="font-mono text-sm font-bold">NOTHING SHIPPED YET.</p>
+              <p className="mt-2 font-mono text-xs text-black/50">The next one might be interesting.</p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section ref={sectionRef} id="projects" className="flex min-h-svh w-full flex-col justify-center border-t-2 border-ink/10 py-20 md:py-28">
@@ -135,7 +193,13 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
         </Reveal>
 
         {/* Stage with side arrows */}
-        <div className="relative mt-4">
+        <div
+          ref={stageRef}
+          onMouseMove={onTilt}
+          onMouseEnter={() => tiltOn && setHov(true)}
+          onMouseLeave={resetTilt}
+          className="relative mt-4 [perspective:1200px]"
+        >
           <button
             onClick={() => go(-1)}
             aria-label="Previous project"
@@ -157,9 +221,10 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
               animate={{ opacity: 1, x: 0 }}
               exit={reduce ? { opacity: 0 } : { opacity: 0, x: -36 * dir }}
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="border-ink bg-white shadow-brutal-lg rounded-brutal-lg grid overflow-hidden border-2 md:grid-cols-2"
+              style={tiltOn ? { rotateX: rX, rotateY: rY, transformStyle: "preserve-3d" } : undefined}
+              className="border-ink bg-white shadow-brutal-lg rounded-brutal-lg relative grid overflow-hidden border-2 md:grid-cols-2"
             >
-              <div className={cn("relative flex min-h-64 items-center justify-center overflow-hidden p-10 md:min-h-[420px]", active.color)}>
+              <div className={cn("relative flex min-h-80 items-center justify-center overflow-hidden p-10 md:min-h-[500px]", active.color)}>
                 {active.heroImage ? (
                   <>
                     <Image
@@ -179,7 +244,7 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
                   </span>
                 )}
               </div>
-              <div className="flex flex-col justify-center gap-4 p-6 md:p-10">
+              <div className="flex flex-col justify-center gap-4 p-8 md:p-12">
                 <p className="font-mono text-xs font-bold text-black/40">
                   {active.featured ? "★ FEATURED PROJECT" : "PROJECT"}
                 </p>
@@ -192,13 +257,31 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
                       CASE STUDY <ArrowRight size={16} />
                     </Button>
                   </TransitionLink>
-                  <a href={`/projects/${active.slug}`}>
-                    <Button variant="neutral" className="font-mono">
-                      <ArrowUpRight size={16} /> GITHUB
-                    </Button>
-                  </a>
+                  {active.githubUrl && (
+                    <a href={active.githubUrl} target="_blank" rel="noreferrer">
+                      <Button variant="neutral" className="font-mono">
+                        <ArrowUpRight size={16} /> GITHUB
+                      </Button>
+                    </a>
+                  )}
+                  {active.liveUrl && (
+                    <a href={active.liveUrl} target="_blank" rel="noreferrer">
+                      <Button variant="neutral" className="font-mono">
+                        <ArrowUpRight size={16} /> LIVE
+                      </Button>
+                    </a>
+                  )}
                 </div>
               </div>
+              {tiltOn && (
+                <motion.div
+                  aria-hidden
+                  animate={{ opacity: hov ? 1 : 0 }}
+                  transition={{ duration: 0.25 }}
+                  style={{ background: glare }}
+                  className="pointer-events-none absolute inset-0"
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

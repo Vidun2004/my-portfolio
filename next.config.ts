@@ -10,11 +10,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Direct uploads ride through Server Actions — allow up to our 5MB
+  // Direct uploads ride through Server Actions — allow up to our 12MB
   // file cap plus multipart overhead.
   experimental: {
     serverActions: {
-      bodySizeLimit: "6mb",
+      bodySizeLimit: "16mb",
     },
   },
 };

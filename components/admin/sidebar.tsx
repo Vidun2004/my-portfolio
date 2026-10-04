@@ -1,14 +1,18 @@
 "use client";
 
+import { Suspense, type ReactNode } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Activity,
   Briefcase,
+  Disc3,
   FolderKanban,
   Image,
   Inbox,
   LayoutDashboard,
   LogOut,
+  Quote,
   Settings,
   Shapes,
   User,
@@ -27,6 +31,8 @@ const SECTIONS = [
       { label: "PROJECTS", href: "/admin/projects", icon: FolderKanban },
       { label: "SKILLS", href: "/admin/skills", icon: Shapes },
       { label: "EXPERIENCE", href: "/admin/experience", icon: Briefcase },
+      { label: "TESTIMONIALS", href: "/admin/testimonials", icon: Quote },
+      { label: "TRACKS", href: "/admin/tracks", icon: Disc3 },
       { label: "ABOUT", href: "/admin/about", icon: User },
     ],
   },
@@ -46,7 +52,7 @@ const SECTIONS = [
   },
 ];
 
-export function AdminSidebar({ email, unread }: { email?: string; unread: number }) {
+export function AdminSidebar({ email, badge }: { email?: string; badge?: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -63,7 +69,7 @@ export function AdminSidebar({ email, unread }: { email?: string; unread: number
 
   return (
     <aside className="border-ink bg-white flex w-full flex-col gap-1 border-b-2 p-4 md:sticky md:top-0 md:h-svh md:w-64 md:shrink-0 md:border-r-2 md:border-b-0">
-      <a href="/admin" className="flex items-center gap-2 text-lg font-bold">
+      <Link href="/admin" className="flex items-center gap-2 text-lg font-bold">
         <span className="border-ink bg-brand-blue flex size-8 items-center justify-center rounded-lg border-2 font-mono text-sm font-bold">
           {"{ }"}
         </span>
@@ -71,7 +77,7 @@ export function AdminSidebar({ email, unread }: { email?: string; unread: number
         <span className="border-ink bg-success ml-auto rounded-full border-2 px-2 py-0.5 font-mono text-[10px] font-bold md:hidden">
           ● LIVE
         </span>
-      </a>
+      </Link>
       {email && <p className="truncate font-mono text-xs text-black/50">{email}</p>}
       <nav className="mt-4 flex flex-row gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:flex-col md:gap-4 md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
         {SECTIONS.map((s) => (
@@ -80,7 +86,7 @@ export function AdminSidebar({ email, unread }: { email?: string; unread: number
               {s.label}
             </p>
             {s.items.map((n) => (
-              <a
+              <Link
                 key={n.href}
                 href={n.href}
                 aria-current={isActive(n.href) ? "page" : undefined}
@@ -93,23 +99,19 @@ export function AdminSidebar({ email, unread }: { email?: string; unread: number
               >
                 <n.icon size={16} strokeWidth={2.5} />
                 {n.label}
-                {"badge" in n && n.badge && unread > 0 && (
-                  <span className="bg-brand-pink text-ink ml-auto rounded-full border-2 border-current px-1.5 text-[11px]">
-                    {unread}
-                  </span>
-                )}
-              </a>
+                {"badge" in n && n.badge && <Suspense>{badge}</Suspense>}
+              </Link>
             ))}
           </div>
         ))}
       </nav>
       <div className="mt-auto hidden gap-2 pt-4 md:flex">
-        <a
+        <Link
           href="/"
           className="flex-1 rounded-lg border-2 border-ink bg-cream px-3 py-2 text-center font-mono text-xs font-bold hover:-translate-y-0.5"
         >
           VIEW SITE
-        </a>
+        </Link>
         <button
           onClick={logout}
           className="flex flex-1 items-center justify-center gap-1 rounded-lg border-2 border-ink bg-white px-3 py-2 font-mono text-xs font-bold hover:bg-red-50"
@@ -118,12 +120,12 @@ export function AdminSidebar({ email, unread }: { email?: string; unread: number
         </button>
       </div>
       <div className="mt-3 flex gap-2 md:hidden">
-        <a
+        <Link
           href="/"
           className="flex-1 rounded-lg border-2 border-ink bg-cream px-3 py-2 text-center font-mono text-xs font-bold"
         >
           VIEW SITE
-        </a>
+        </Link>
         <button
           onClick={logout}
           className="flex flex-1 items-center justify-center gap-1 rounded-lg border-2 border-ink bg-white px-3 py-2 font-mono text-xs font-bold"

@@ -3,28 +3,20 @@
 import { useRef, useState } from "react";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { uploadMedia } from "@/app/actions/admin-media";
-import { MediaPicker } from "@/components/admin/media-picker";
 import { Button } from "@/components/ui/button";
 
 /**
- * Bucket-backed image field — no URLs typed by hand. Pick from the
- * media library or upload straight into the Supabase bucket folder.
- * The stored value is the bucket's public URL (hidden input).
+ * Bucket-backed MP3 field — upload into audio/ and store the public URL
+ * in a hidden input. No hand-typed URLs.
  */
-export function ImageField({
+export function AudioField({
   label,
   name,
   defaultValue = "",
-  folder,
-  accept = "image/jpeg,image/png,image/webp,image/svg+xml",
-  fileKind = "image",
 }: {
   label: string;
   name: string;
   defaultValue?: string;
-  folder: "profile" | "projects" | "screenshots" | "documents";
-  accept?: string;
-  fileKind?: "image" | "file";
 }) {
   const [url, setUrl] = useState(defaultValue);
   const [busy, setBusy] = useState(false);
@@ -35,7 +27,7 @@ export function ImageField({
     setBusy(true);
     setError(null);
     const fd = new FormData();
-    fd.set("folder", folder);
+    fd.set("folder", "audio");
     fd.set("file", file);
     try {
       const res = await uploadMedia({ ok: false }, fd);
@@ -47,34 +39,27 @@ export function ImageField({
     setBusy(false);
   }
 
-  const isFile = fileKind === "file" || (url !== "" && !/\.(jpg|jpeg|png|webp|svg)(\?|#|$)/i.test(url));
-
   return (
     <div>
       <span className="font-mono text-xs font-bold">{label}</span>
       <input type="hidden" name={name} value={url} />
-      <div className="border-ink mt-1.5 overflow-hidden rounded-lg border-2 bg-cream">
+      <div className="border-ink mt-1.5 rounded-lg border-2 bg-cream p-3">
         {url ? (
-          isFile ? (
-            <a href={url} target="_blank" rel="noreferrer" className="flex h-16 items-center gap-2 px-3 font-mono text-xs font-bold hover:underline">
-              📄 {url.split("/").pop()}
-            </a>
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={url} alt={`${label} preview`} className="h-32 w-full object-cover" loading="lazy" />
-          )
+          <div className="flex items-center gap-3">
+            <audio controls preload="none" src={url} className="h-9 w-full" />
+            <Button type="button" variant="neutral" onClick={() => setUrl("")} className="shrink-0 font-mono">
+              <Trash2 size={16} /> REMOVE
+            </Button>
+          </div>
         ) : (
-          <p className="flex h-32 items-center justify-center font-mono text-xs text-black/40">
-            {fileKind === "file" ? "NO FILE YET" : "NO IMAGE YET"}
-          </p>
+          <p className="flex h-9 items-center font-mono text-xs text-black/40">NO TRACK YET</p>
         )}
       </div>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {fileKind === "image" && <MediaPicker onPick={setUrl} />}
+      <div className="mt-2">
         <input
           ref={fileRef}
           type="file"
-          accept={accept}
+          accept="audio/mpeg"
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0];
@@ -90,13 +75,8 @@ export function ImageField({
           className="font-mono"
         >
           {busy ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
-          {busy ? "…" : "UPLOAD"}
+          {busy ? "…" : "UPLOAD MP3"}
         </Button>
-        {url && (
-          <Button type="button" variant="neutral" onClick={() => setUrl("")} className="font-mono">
-            <Trash2 size={16} /> REMOVE
-          </Button>
-        )}
       </div>
       {error && <p className="mt-1.5 font-mono text-xs text-red-600">{error}</p>}
     </div>
