@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { submitContact } from "@/app/actions/contact";
+import { trackEvent } from "@/lib/track";
 import { Reveal } from "@/components/animation/reveal";
 import { Button } from "@/components/ui/button";
 
@@ -46,6 +47,7 @@ export function Contact() {
     }
     setStatus("sent");
     reset({ intent: "build" });
+    trackEvent("contact_submit", data.intent);
     setTimeout(() => setStatus("idle"), 3000);
   }
 

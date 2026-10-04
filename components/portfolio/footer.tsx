@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { CookieLink } from "@/components/portfolio/cookie-link";
 
 export function Footer({
   siteName,
@@ -16,10 +17,10 @@ export function Footer({
   available?: boolean;
 }) {
   const links = [
-    ...(github ? [{ label: "GitHub", href: github }] : []),
-    ...(linkedin ? [{ label: "LinkedIn", href: linkedin }] : []),
-    ...(email ? [{ label: "Email", href: `mailto:${email}` }] : []),
-    ...(resumeUrl ? [{ label: "Resume ↓", href: resumeUrl }] : []),
+    ...(github ? [{ label: "GitHub", href: github, track: "outbound:github" }] : []),
+    ...(linkedin ? [{ label: "LinkedIn", href: linkedin, track: "outbound:linkedin" }] : []),
+    ...(email ? [{ label: "Email", href: `mailto:${email}`, track: "outbound:email" }] : []),
+    ...(resumeUrl ? [{ label: "Resume ↓", href: resumeUrl, track: "resume" }] : []),
   ];
   return (
     <footer data-dark-cursor className="border-ink bg-ink text-cream w-full border-t-2">
@@ -37,6 +38,7 @@ export function Footer({
               href={l.href}
               target="_blank"
               rel="noreferrer"
+              data-track={l.track}
               className="flex items-center gap-1 rounded-full border-2 border-white/20 px-3 py-1.5 transition-colors hover:border-white hover:bg-white hover:text-black"
             >
               {l.label} <ArrowUpRight size={14} />
@@ -49,8 +51,12 @@ export function Footer({
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4 font-mono text-xs text-white/50 md:px-10">
-          <span>© 2026 Vidun · no cookies, no tracking</span>
-          <a href="#home" className="hover:text-white">BACK TO TOP ↑</a>
+          <span>© 2026 Vidun · privacy-first analytics</span>
+          <span className="flex items-center gap-3">
+            <a href="/privacy" className="hover:text-white">PRIVACY</a>
+            <CookieLink />
+            <a href="#home" className="hover:text-white">BACK TO TOP ↑</a>
+          </span>
         </div>
       </div>
     </footer>

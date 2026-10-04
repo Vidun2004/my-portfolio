@@ -92,8 +92,8 @@ export default async function ProjectPage({
           <div className="border-ink bg-white shadow-brutal rounded-brutal-md border-2 p-6">
             <h2 className="font-mono text-xs font-bold text-black/50">LINKS</h2>
             <div className="mt-3 flex flex-wrap gap-2">
-              {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noreferrer"><Button className="font-mono">LIVE <ArrowUpRight size={16} /></Button></a>}
-              {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noreferrer"><Button variant="neutral" className="font-mono">GITHUB <ArrowUpRight size={16} /></Button></a>}
+              {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noreferrer" data-track={`outbound:${p.slug}-live`}><Button className="font-mono">LIVE <ArrowUpRight size={16} /></Button></a>}
+              {p.githubUrl && <a href={p.githubUrl} target="_blank" rel="noreferrer" data-track={`outbound:${p.slug}-github`}><Button variant="neutral" className="font-mono">GITHUB <ArrowUpRight size={16} /></Button></a>}
               {!p.liveUrl && !p.githubUrl && <p className="font-mono text-xs text-black/50">Links coming soon.</p>}
             </div>
           </div>

@@ -252,20 +252,20 @@ export function Projects({ items }: { items?: ProjectCard[] }) {
                 <p className="max-w-md text-black/70">{active.desc}</p>
                 <TechRow tech={active.tech} />
                 <div className="mt-2 flex flex-wrap gap-3">
-                  <TransitionLink href={`/projects/${active.slug}`} title={active.title} data-cursor="VIEW">
+                  <TransitionLink href={`/projects/${active.slug}`} title={active.title} data-cursor="VIEW" data-track={`case_open:${active.slug}`}>
                     <Button className="font-mono">
                       CASE STUDY <ArrowRight size={16} />
                     </Button>
                   </TransitionLink>
                   {active.githubUrl && (
-                    <a href={active.githubUrl} target="_blank" rel="noreferrer">
+                    <a href={active.githubUrl} target="_blank" rel="noreferrer" data-track={`outbound:${active.slug}-github`}>
                       <Button variant="neutral" className="font-mono">
                         <ArrowUpRight size={16} /> GITHUB
                       </Button>
                     </a>
                   )}
                   {active.liveUrl && (
-                    <a href={active.liveUrl} target="_blank" rel="noreferrer">
+                    <a href={active.liveUrl} target="_blank" rel="noreferrer" data-track={`outbound:${active.slug}-live`}>
                       <Button variant="neutral" className="font-mono">
                         <ArrowUpRight size={16} /> LIVE
                       </Button>

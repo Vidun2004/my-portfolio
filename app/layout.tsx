@@ -8,6 +8,8 @@ import { CustomCursor } from "@/components/animation/custom-cursor";
 import { TransitionProvider } from "@/components/animation/page-transition";
 import { SplashScreen } from "@/components/animation/splash-screen";
 import { CdPlayer } from "@/components/portfolio/cd-player";
+import { CookieConsent } from "@/components/portfolio/cookie-consent";
+import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { getPublicTracks, getSettings } from "@/lib/content";
 
 const sans = Space_Grotesk({
@@ -81,6 +83,8 @@ export default async function RootLayout({
           <SplashScreen />
         </SmoothScroll>
         <CdPlayer tracks={tracks} spotifyUrl={settings?.spotify_playlist_url} tooltipLabel="NOW PLAYING" tooltipDuration={4500} />
+        <CookieConsent />
+        <PageViewTracker />
         <CustomCursor />
       </body>
     </html>

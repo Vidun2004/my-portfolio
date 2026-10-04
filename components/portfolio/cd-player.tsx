@@ -13,6 +13,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Track } from "@/lib/content";
 import { attachAudio, resumeAudio } from "@/lib/audio-meter";
+import { trackEvent } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
 function fmt(sec: number): string {
@@ -159,6 +160,7 @@ export function CdPlayer({
     } else {
       wantPlaying.current = true;
       resumeAudio();
+      trackEvent("playlist_play", tracks[index]?.title ?? "");
       el.play().then(() => {
         retireTapStamp();
         setPlaying(true);
@@ -435,7 +437,10 @@ export function CdPlayer({
                     {tracks.map((t, i) => (
                       <li key={`${t.audio_url}-${i}`}>
                         <button
-                          onClick={() => playAt(i)}
+                          onClick={() => {
+                            trackEvent("playlist_play", t.title);
+                            playAt(i);
+                          }}
                           className={cn(
                             "border-ink flex w-full items-center gap-2.5 rounded-lg border-2 px-3 py-2 text-left transition-all",
                             i === index

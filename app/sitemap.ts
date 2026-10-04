@@ -7,6 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const slugs = await getPublicProjectSlugs();
   return [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     ...[...slugs].map((slug) => ({
       url: `${SITE_URL}/projects/${slug}`,
       lastModified: now,

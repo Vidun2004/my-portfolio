@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Activity,
+  BarChart3,
   Briefcase,
   Disc3,
   FolderKanban,
@@ -42,6 +43,10 @@ const SECTIONS = [
       { label: "MESSAGES", href: "/admin/messages", icon: Inbox, badge: true },
       { label: "ACTIVITY", href: "/admin/activity", icon: Activity },
     ],
+  },
+  {
+    label: "ANALYTICS",
+    items: [{ label: "OVERVIEW", href: "/admin/analytics", icon: BarChart3 }],
   },
   {
     label: "SYSTEM",
