@@ -10,10 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getPublicProjectDetail, getPublicProjectSlugs, getSettings } from "@/lib/content";
 
-export async function generateStaticParams() {
-  const dbSlugs = await getPublicProjectSlugs();
-  return [...new Set(dbSlugs)].map((slug) => ({ slug }));
-}
+// DB-driven content reads cookies() (Supabase SSR), which is illegal on
+// statically prerendered routes at runtime — serve on demand instead.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

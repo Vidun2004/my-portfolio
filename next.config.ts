@@ -30,6 +30,12 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // Browsers probe /favicon.ico by default; serve the brand SVG icon.
+      { source: "/favicon.ico", destination: "/icon.svg", permanent: true },
+    ];
+  },
   // Direct uploads ride through Server Actions — allow up to our 12MB
   // file cap plus multipart overhead.
   experimental: {
