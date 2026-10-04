@@ -32,9 +32,13 @@ function fmt(sec: number): string {
 export function CdPlayer({
   tracks,
   spotifyUrl,
+  tooltipLabel = "NOW PLAYING",
+  tooltipDuration = 4000,
 }: {
   tracks: Track[];
   spotifyUrl?: string;
+  tooltipLabel?: string;
+  tooltipDuration?: number;
 }) {
   const reduce = useReducedMotion();
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -43,6 +47,7 @@ export function CdPlayer({
   const wantPlaying = useRef(false);
   const savedTime = useRef(0);
   const [open, setOpen] = useState(false);
+  const [tip, setTip] = useState<string | null>(null);
   const [tapSeen, setTapSeen] = useState(true);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -78,6 +83,19 @@ export function CdPlayer({
   }
 
   const track = tracks[index];
+  const nowTitle = track && tooltipLabel ? `${tooltipLabel}: ${track.title}` : null;
+
+  // Now-playing tooltip: pops above the disc on every track start,
+  // hides after `tooltipDuration`. Pass tooltipLabel="" to disable.
+  useEffect(() => {
+    if (!playing || !nowTitle) return;
+    const show = window.setTimeout(() => setTip(nowTitle), 0);
+    const hide = window.setTimeout(() => setTip(null), tooltipDuration);
+    return () => {
+      window.clearTimeout(show);
+      window.clearTimeout(hide);
+    };
+  }, [playing, index, nowTitle, tooltipDuration]);
 
   const setAudioEl = useCallback((el: HTMLAudioElement | null) => {
     if (el) {
@@ -163,32 +181,6 @@ export function CdPlayer({
     });
   }
 
-  // First-interaction autostart: browsers require a real user gesture
-  // before any sound, so the first pointer/key interaction kicks off
-  // playback (once). Respects mute. Spotify embeds always need their
-  // own click and are unaffected.
-  useEffect(() => {
-    if (!tracks.length) return;
-    function kick() {
-      const el = audioRef.current;
-      if (!el || !el.paused || el.muted) return;
-      resumeAudio();
-      el.play()
-        .then(() => setPlaying(true))
-        .catch(() => setPlaying(false));
-      cleanup();
-    }
-    function cleanup() {
-      window.removeEventListener("pointerdown", kick);
-      window.removeEventListener("keydown", kick);
-      window.removeEventListener("touchend", kick);
-    }
-    window.addEventListener("pointerdown", kick);
-    window.addEventListener("keydown", kick);
-    window.addEventListener("touchend", kick);
-    return cleanup;
-  }, [tracks.length]);
-
   // Lock scroll while the playlist modal is open.
   useEffect(() => {
     if (!open) return;
@@ -234,6 +226,19 @@ export function CdPlayer({
 
       {/* floating disc */}
       <div className="fixed right-4 bottom-4 z-[120] flex flex-col items-center gap-2 md:right-6 md:bottom-6">
+        <AnimatePresence>
+          {tip && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 26 }}
+              className="border-ink bg-ink text-cream shadow-brutal max-w-44 rounded-lg border-2 px-2.5 py-1.5 text-center"
+            >
+              <p className="truncate font-mono text-[10px] font-bold">{tip}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <button
           type="button"
           onClick={onDiscClick}

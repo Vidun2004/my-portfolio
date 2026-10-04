@@ -44,7 +44,7 @@ export default async function Home() {
         <Projects items={projects} />
         <Experience steps={experience} />
         <GithubGraph data={contributions} />
-        {testimonials.length > 0 && <Testimonials items={testimonials} />}
+        <Testimonials items={testimonials} />
         <Contact />
       </main>
       <Footer

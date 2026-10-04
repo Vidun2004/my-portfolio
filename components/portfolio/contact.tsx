@@ -113,7 +113,10 @@ export function Contact() {
               <p className="mt-3 font-mono text-xs text-red-600">↑ {serverError ?? err}</p>
             )}
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+              <p className="font-mono text-[11px] text-black/45">
+                Stored only so I can reply — never shared.
+              </p>
               <Button type="submit" size="lg" disabled={status !== "idle"} className="font-mono">
                 {status === "idle" && <>SEND IT <ArrowRight size={18} /></>}
                 {status === "sending" && <><Loader2 size={18} className="animate-spin" /> SENDING…</>}

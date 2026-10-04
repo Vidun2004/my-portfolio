@@ -80,7 +80,7 @@ export default async function RootLayout({
           <TransitionProvider>{children}</TransitionProvider>
           <SplashScreen />
         </SmoothScroll>
-        <CdPlayer tracks={tracks} spotifyUrl={settings?.spotify_playlist_url} />
+        <CdPlayer tracks={tracks} spotifyUrl={settings?.spotify_playlist_url} tooltipLabel="NOW PLAYING" tooltipDuration={4500} />
         <CustomCursor />
       </body>
     </html>
