@@ -35,6 +35,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     // Route anchor jumps (#about, #skills…) through Lenis so they glide
     // instead of snapping, accounting for the fixed navbar.
     function onClick(e: MouseEvent) {
+      if (e.defaultPrevented) return;
       const anchor = (e.target as HTMLElement).closest?.('a[href^="#"]');
       if (!anchor) return;
       const hash = anchor.getAttribute("href");
