@@ -39,10 +39,16 @@ export function Contact() {
   async function onSubmit(data: Form) {
     setStatus("sending");
     setServerError(null);
-    const res = await submitContact({ ...data, website: "" });
-    if (!res.ok) {
+    try {
+      const res = await submitContact({ ...data, website: "" });
+      if (!res.ok) {
+        setStatus("idle");
+        setServerError(res.error);
+        return;
+      }
+    } catch {
       setStatus("idle");
-      setServerError(res.error);
+      setServerError("Couldn't send. Please try again.");
       return;
     }
     setStatus("sent");
