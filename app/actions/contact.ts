@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
-export const INTENTS = ["build", "hi", "hire", "bug"] as const;
+const INTENTS = ["build", "hi", "hire", "bug"] as const;
 
 const schema = z.object({
   name: z.string().trim().min(2).max(100),
