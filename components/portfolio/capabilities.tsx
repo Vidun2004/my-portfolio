@@ -2,49 +2,87 @@
 
 import { motion } from "motion/react";
 import { Code2, Smartphone, Server, Gamepad2, ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import type { MouseEvent } from "react";
 import { Reveal } from "@/components/animation/reveal";
 import { cn } from "@/lib/utils";
 
 function TerminalVisual() {
+  const [phase, setPhase] = useState<"idle" | "building" | "done">("idle");
+
+  function run(e: MouseEvent) {
+    e.preventDefault();
+    if (phase !== "idle") return;
+    setPhase("building");
+    window.setTimeout(() => setPhase("done"), 1300);
+    window.setTimeout(() => setPhase("idle"), 3400);
+  }
+
   return (
-    <div className="border-ink w-full overflow-hidden rounded-lg border-2 bg-ink font-mono text-xs text-cream">
+    <div
+      onClick={run}
+      data-cursor="PRESS"
+      title="Tap to deploy"
+      className="border-ink w-full cursor-pointer overflow-hidden rounded-lg border-2 bg-ink font-mono text-xs text-cream"
+    >
       <div className="flex items-center gap-1.5 border-b border-white/15 px-3 py-2">
         <span className="size-2.5 rounded-full bg-red-400" />
         <span className="size-2.5 rounded-full bg-yellow-400" />
         <span className="size-2.5 rounded-full bg-green-400" />
         <span className="ml-2 text-white/40">deploy.sh</span>
-        <span className="ml-auto flex items-center gap-1 rounded-full bg-green-400/20 px-2 py-0.5 text-[10px] font-bold text-green-300">
-          <span className="size-1.5 animate-pulse rounded-full bg-green-400" /> LIVE
+        <span
+          className={cn(
+            "ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold",
+            phase === "done" ? "bg-green-400/20 text-green-300" : "bg-white/10 text-white/50",
+          )}
+        >
+          <span className={cn("size-1.5 rounded-full", phase === "done" ? "animate-pulse bg-green-400" : "bg-white/40")} />
+          {phase === "done" ? "LIVE" : phase === "building" ? "…" : "IDLE"}
         </span>
       </div>
       <div className="space-y-1.5 p-3">
         <p><span className="text-brand-teal">$</span> build --prod</p>
         <div className="h-2 overflow-hidden rounded-full border border-white/20 bg-white/10">
           <motion.div
-            animate={{ width: ["0%", "100%"] }}
-            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.8 }}
+            animate={{ width: phase === "idle" ? "0%" : "100%" }}
+            transition={{ duration: phase === "building" ? 1.2 : 0.3, ease: "easeInOut" }}
             className="bg-brand-teal h-full rounded-full"
           />
         </div>
-        {["✓ api compiled", "✓ db migrated", "✓ auth wired"].map((line, k) => (
-          <motion.p
-            key={line}
-            animate={{ opacity: [0.25, 1, 1, 0.25] }}
-            transition={{ duration: 4, repeat: Infinity, delay: k * 0.9, ease: "easeInOut" }}
-            className="text-white/70"
-          >
-            {line}
-          </motion.p>
-        ))}
-        <p><span className="text-brand-teal">$</span> ship it<span className="ml-0.5 inline-block h-3.5 w-2 animate-pulse bg-brand-yellow align-middle" /></p>
+        {(phase === "building" || phase === "done") && (
+          <>
+            <p className="text-white/70">✓ api compiled</p>
+            {phase === "done" && (
+              <>
+                <p className="text-white/70">✓ db migrated · auth wired</p>
+                <p className="font-bold text-green-300">✓ shipped — tap to run it back</p>
+              </>
+            )}
+          </>
+        )}
+        {phase === "idle" && (
+          <p className="text-white/40">tap to deploy<span className="ml-0.5 inline-block h-3.5 w-2 animate-pulse bg-brand-yellow align-middle" /></p>
+        )}
       </div>
     </div>
   );
 }
 
 function PhoneVisual() {
+  const [tab, setTab] = useState(0);
+
+  function flip(e: MouseEvent) {
+    e.preventDefault();
+    setTab((t) => (t === 0 ? 1 : 0));
+  }
+
   return (
-    <div className="border-ink bg-white mx-auto flex h-52 w-28 flex-col overflow-hidden rounded-xl border-2">
+    <div
+      onClick={flip}
+      data-cursor="PRESS"
+      title="Tap to switch screens"
+      className="border-ink bg-white mx-auto flex h-52 w-28 cursor-pointer flex-col overflow-hidden rounded-xl border-2"
+    >
       <div className="bg-ink mx-auto mt-1.5 h-1 w-8 shrink-0 rounded-full" />
       <div className="bg-ink/80 flex items-center justify-between px-2 py-1 font-mono text-[8px] font-bold text-white">
         <span>9:41</span>
@@ -54,39 +92,32 @@ function PhoneVisual() {
           <span className="size-1 rounded-full bg-brand-yellow" />
         </span>
       </div>
-      <div className="relative flex flex-1 flex-col justify-end gap-1 overflow-hidden bg-cream p-1.5">
+      <div className="relative m-1.5 flex-1 overflow-hidden rounded-md bg-cream">
         <motion.div
-          animate={{ opacity: [0, 0, 1, 1, 0], x: [8, 8, 0, 0, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeOut" }}
-          className="max-w-[85%] rounded-lg rounded-bl-none border border-ink/20 bg-white px-1.5 py-1 font-mono text-[8px] font-bold"
+          animate={{ x: tab === 0 ? "0%" : "-50%" }}
+          transition={{ type: "spring", stiffness: 300, damping: 28 }}
+          className="flex h-full w-[200%]"
         >
-          shipped the build 🚀
-        </motion.div>
-        <motion.div
-          animate={{ opacity: [0, 0, 0, 1, 1, 0], x: [-8, -8, -8, 0, 0, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeOut" }}
-          className="border-ink bg-brand-blue max-w-[85%] self-end rounded-lg rounded-br-none border px-1.5 py-1 font-mono text-[8px] font-bold"
-        >
-          on my phone. nice.
-        </motion.div>
-        <motion.div
-          animate={{ opacity: [0, 1, 1, 0] }}
-          transition={{ duration: 5, repeat: Infinity, times: [0, 0.08, 0.2, 0.3] }}
-          className="flex gap-0.5 px-1 py-0.5"
-        >
-          {[0, 1, 2].map((d) => (
-            <motion.span
-              key={d}
-              animate={{ y: [0, -2, 0] }}
-              transition={{ duration: 0.6, repeat: Infinity, delay: d * 0.15 }}
-              className="bg-ink/50 size-1 rounded-full"
-            />
-          ))}
+          <div className="bg-brand-blue flex w-1/2 flex-col items-center justify-center gap-1 border-r-2 border-ink p-1">
+            <span className="rounded bg-white px-1 font-mono text-[9px] font-bold">HOME</span>
+            <span className="h-1 w-3/4 rounded bg-white/70" />
+            <span className="h-1 w-1/2 rounded bg-white/70" />
+            <span className="mt-0.5 rounded bg-white px-1 font-mono text-[8px] font-bold">tap →</span>
+          </div>
+          <div className="bg-brand-pink flex w-1/2 flex-col items-center justify-center gap-1 p-1">
+            <span className="rounded bg-white px-1 font-mono text-[9px] font-bold">CHAT</span>
+            <span className="max-w-[90%] rounded rounded-bl-none bg-white px-1 py-0.5 font-mono text-[8px] font-bold">
+              shipped it 🚀
+            </span>
+            <span className="bg-brand-blue max-w-[90%] self-end rounded rounded-br-none border border-ink px-1 py-0.5 font-mono text-[8px] font-bold">
+              nice.
+            </span>
+          </div>
         </motion.div>
       </div>
       <div className="border-ink flex justify-around border-t-2 border-ink bg-white px-2 py-1">
-        <span className="bg-brand-pink size-2.5 rounded-sm border border-ink" />
-        <span className="size-2.5 rounded-full border border-ink bg-cream" />
+        <span className={cn("size-2.5 rounded-sm border border-ink", tab === 0 ? "bg-brand-pink" : "bg-cream")} />
+        <span className={cn("size-2.5 rounded-full border border-ink", tab === 1 ? "bg-brand-pink" : "bg-cream")} />
         <span className="size-2.5 rounded-full border border-ink bg-cream" />
       </div>
     </div>
@@ -95,8 +126,20 @@ function PhoneVisual() {
 
 function ServerVisual() {
   const units = [0, 1, 2];
+  const [burst, setBurst] = useState(0);
+
+  function ping(e: MouseEvent) {
+    e.preventDefault();
+    setBurst((b) => b + 1);
+  }
+
   return (
-    <div className="border-ink flex w-full items-stretch gap-2 rounded-lg border-2 bg-cream p-2">
+    <div
+      onClick={ping}
+      data-cursor="PRESS"
+      title="Tap to ping"
+      className="border-ink flex w-full cursor-pointer items-stretch gap-2 rounded-lg border-2 bg-cream p-2"
+    >
       {/* rack */}
       <div className="flex w-16 flex-col gap-1">
         {units.map((u) => (
@@ -126,10 +169,19 @@ function ServerVisual() {
               transition={{ duration: 1.8, repeat: Infinity, delay: k * 0.9, ease: "linear" }}
               className="bg-brand-yellow absolute top-1/2 size-1.5 -translate-y-1/2 rounded-full border border-ink"
             />
+            <motion.span
+              key={`burst-${burst}-${k}`}
+              initial={burst > 0 ? { x: "-120%", opacity: 1 } : false}
+              animate={burst > 0 ? { x: "350%", opacity: [1, 1, 0] } : { opacity: 0 }}
+              transition={{ duration: 0.7, ease: "linear" }}
+              style={burst === 0 ? { opacity: 0 } : undefined}
+              className="bg-brand-pink absolute top-1/2 size-2 -translate-y-1/2 rounded-full border border-ink"
+            />
           </div>
         ))}
         <div className="flex items-center gap-1 text-[8px] text-black/50">
           <span className="size-1.5 animate-pulse rounded-full bg-green-500" /> 99.9% UPTIME
+          {burst > 0 && <span key={burst} className="font-bold text-black">· PING!</span>}
         </div>
       </div>
     </div>
@@ -137,8 +189,22 @@ function ServerVisual() {
 }
 
 function GameVisual() {
+  const [score, setScore] = useState(42);
+  const [hops, setHops] = useState(0);
+
+  function hop(e: MouseEvent) {
+    e.preventDefault();
+    setHops((h) => h + 1);
+    setScore((s) => s + 1);
+  }
+
   return (
-    <div className="border-ink relative h-full min-h-36 w-full overflow-hidden rounded-lg border-2 bg-ink">
+    <div
+      onClick={hop}
+      data-cursor="PRESS"
+      title="Tap to hop"
+      className="border-ink relative h-full min-h-36 w-full cursor-pointer overflow-hidden rounded-lg border-2 bg-ink"
+    >
       {/* stars */}
       {[8, 30, 55, 78].map((left, k) => (
         <motion.span
@@ -150,7 +216,7 @@ function GameVisual() {
         />
       ))}
       <div className="absolute inset-x-3 top-2 flex justify-between font-mono text-[10px] font-bold text-white/70">
-        <span>SCORE 042</span>
+        <span>SCORE {String(score).padStart(3, "0")}</span>
         <span className="text-brand-pink">♥♥♥</span>
       </div>
       {/* coin */}
@@ -179,8 +245,10 @@ function GameVisual() {
       </div>
       {/* player */}
       <motion.div
+        key={hops}
+        initial={{ y: 0 }}
         animate={{ y: [0, 0, -38, 0, 0] }}
-        transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut", times: [0, 0.3, 0.5, 0.7, 1] }}
+        transition={{ duration: hops === 0 ? 1.6 : 0.55, repeat: hops === 0 ? Infinity : 0, ease: "easeInOut", times: [0, 0.3, 0.5, 0.7, 1] }}
         className="absolute bottom-5 left-10"
       >
         <span className="border-ink bg-brand-yellow block size-6 rounded-[4px] border-2" />
