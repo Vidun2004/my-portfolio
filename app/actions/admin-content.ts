@@ -66,7 +66,7 @@ export async function saveAbout(_prev: ContentState, formData: FormData): Promis
   return { ok: true };
 }
 
-const SETTING_KEYS = ["site_name", "tagline", "email", "github_url", "linkedin_url", "resume_url", "spotify_playlist_url"] as const;
+const SETTING_KEYS = ["site_name", "tagline", "email", "github_url", "linkedin_url", "resume_url", "spotify_playlist_url", "contact_maintenance"] as const;
 
 export async function saveSettings(_prev: ContentState, formData: FormData): Promise<ContentState> {
   const user = await requireAdmin();

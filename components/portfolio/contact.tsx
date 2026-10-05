@@ -26,7 +26,7 @@ const INTENT_LABEL: Record<Form["intent"], string> = {
   bug: "report a bug",
 };
 
-export function Contact() {
+export function Contact({ maintenance = false, email }: { maintenance?: boolean; email?: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -76,6 +76,26 @@ export function Contact() {
         </Reveal>
 
         <Reveal delay={0.1}>
+          {maintenance ? (
+            <div className="border-ink bg-brand-yellow shadow-brutal-lg rounded-brutal-lg mx-auto mt-10 max-w-4xl border-2 p-6 text-center md:p-10">
+              <p className="inline-block rounded-full border-2 border-ink bg-white px-3 py-1 font-mono text-xs font-bold">
+                ⚠ UNDER MAINTENANCE
+              </p>
+              <p className="mt-4 text-2xl font-bold uppercase md:text-3xl">
+                The form is taking a nap.
+              </p>
+              <p className="mx-auto mt-2 max-w-md text-black/70">
+                It&apos;ll be back soon — until then, my inbox is wide open.
+              </p>
+              {email && (
+                <a href={`mailto:${email}`} className="mt-6 inline-block">
+                  <span className="border-ink bg-ink text-cream shadow-brutal rounded-brutal-md inline-block border-2 px-6 py-3 font-mono text-sm font-bold">
+                    EMAIL ME → {email}
+                  </span>
+                </a>
+              )}
+            </div>
+          ) : (
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="border-ink bg-white shadow-brutal-lg rounded-brutal-lg mx-auto mt-10 max-w-4xl border-2 p-6 md:p-10"
@@ -132,6 +152,7 @@ export function Contact() {
               </Button>
             </div>
           </form>
+          )}
         </Reveal>
       </div>
     </section>

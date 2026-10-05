@@ -45,7 +45,7 @@ export default async function Home() {
         <Experience steps={experience} />
         <GithubGraph data={contributions} />
         <Testimonials items={testimonials} />
-        <Contact />
+        <Contact maintenance={settings?.contact_maintenance === "on"} email={settings?.email} />
       </main>
       <Footer
         siteName={settings?.site_name}
