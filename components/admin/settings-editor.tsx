@@ -42,10 +42,17 @@ export function SettingsEditor({ initial }: { initial: Record<string, string> })
         ))}
       </div>
       <ImageField label="RESUME (PDF → footer pill)" name="resume_url" defaultValue={initial["resume_url"] ?? ""} folder="documents" accept="application/pdf" fileKind="file" />
-      <label className="flex items-center gap-2 font-mono text-xs font-bold">
-        <input type="checkbox" name="contact_maintenance" defaultChecked={initial["contact_maintenance"] === "true"} className="size-4 accent-black" />
-        CONTACT FORM MAINTENANCE MODE (shows email fallback)
-      </label>
+      <div>
+        <label className="font-mono text-xs font-bold">CONTACT FORM MODE</label>
+        <select
+          name="contact_maintenance"
+          defaultValue={initial["contact_maintenance"] === "on" ? "on" : "off"}
+          className="mt-1.5 flex h-10 w-full rounded-base border-2 border-border bg-secondary-background px-3 text-sm font-base"
+        >
+          <option value="off">NORMAL — form live</option>
+          <option value="on">MAINTENANCE — email fallback card</option>
+        </select>
+      </div>
       <Button type="submit" size="lg" disabled={pending} className="font-mono">
         {pending ? <><Loader2 size={18} className="animate-spin" /> SAVING…</> : "SAVE SETTINGS"}
       </Button>
