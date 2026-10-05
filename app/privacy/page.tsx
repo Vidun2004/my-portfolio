@@ -62,7 +62,6 @@ export default async function PrivacyPage() {
         email={settings?.email}
         github={settings?.github_url}
         linkedin={settings?.linkedin_url}
-        resumeUrl={settings?.resume_url}
       />
     </div>
   );

@@ -39,7 +39,7 @@ export default async function Home() {
       <main className="w-full">
         <Hero available={about?.availability} />
         <Capabilities />
-        <About profile={about} />
+        <About profile={about} resumeUrl={settings?.resume_url} />
         <Skills items={skills} />
         <Projects items={projects} />
         <Experience steps={experience} />
@@ -52,7 +52,6 @@ export default async function Home() {
         email={settings?.email}
         github={settings?.github_url}
         linkedin={settings?.linkedin_url}
-        resumeUrl={settings?.resume_url}
         available={about?.availability}
       />
     </div>

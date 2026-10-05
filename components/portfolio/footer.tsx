@@ -6,21 +6,18 @@ export function Footer({
   email,
   github,
   linkedin,
-  resumeUrl,
   available,
 }: {
   siteName?: string;
   email?: string;
   github?: string;
   linkedin?: string;
-  resumeUrl?: string;
   available?: boolean;
 }) {
   const links = [
     ...(github ? [{ label: "GitHub", href: github, track: "outbound:github" }] : []),
     ...(linkedin ? [{ label: "LinkedIn", href: linkedin, track: "outbound:linkedin" }] : []),
     ...(email ? [{ label: "Email", href: `mailto:${email}`, track: "outbound:email" }] : []),
-    ...(resumeUrl ? [{ label: "Resume ↓", href: resumeUrl, track: "resume" }] : []),
   ];
   return (
     <footer data-dark-cursor className="border-ink bg-ink text-cream w-full border-t-2">

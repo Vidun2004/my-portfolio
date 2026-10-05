@@ -154,7 +154,6 @@ export default async function ProjectPage({
         email={settings?.email}
         github={settings?.github_url}
         linkedin={settings?.linkedin_url}
-        resumeUrl={settings?.resume_url}
       />
     </div>
   );

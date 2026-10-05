@@ -126,7 +126,7 @@ function RenderLine({ line }: { line: Line }) {
   );
 }
 
-export function About({ profile }: { profile?: AboutProfile }) {
+export function About({ profile, resumeUrl }: { profile?: AboutProfile; resumeUrl?: string }) {
   const p = profile;
   const script = useMemo(() => (p ? buildScript(p) : []), [p]);
 
@@ -319,6 +319,19 @@ export function About({ profile }: { profile?: AboutProfile }) {
             <p className="mt-2 text-sm font-bold">{p.location || "Earth"}</p>
           </div>
         </div>
+        {resumeUrl && (
+          <div className="mx-auto mt-8 max-w-3xl text-center">
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noreferrer"
+              data-track="resume"
+              className="border-ink bg-ink text-cream shadow-brutal rounded-brutal-md inline-block border-2 px-8 py-3 font-mono text-sm font-bold transition-all hover:-translate-y-0.5 hover:shadow-brutal-lg"
+            >
+              DOWNLOAD RESUME ↓
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );
