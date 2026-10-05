@@ -115,7 +115,7 @@ export function Experience({ steps }: { steps?: JourneyStep[] }) {
   const [dir, setDir] = useState(1);
   const lastIdx = useRef(0);
   const sectionRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const progress = useMotionValue(0);
 
   // Lock scroll + close on Escape while inspecting.
@@ -148,15 +148,15 @@ export function Experience({ steps }: { steps?: JourneyStep[] }) {
 
   useGSAP(
     () => {
-      if (!pinned || !stageRef.current) return;
+      // No JS pin: the stage is CSS-sticky inside a tall track, so it
+      // glides into place with zero snap. ScrollTrigger only measures.
+      if (!pinned || !trackRef.current) return;
       const len = items.length;
       const st = ScrollTrigger.create({
-        trigger: stageRef.current,
+        trigger: trackRef.current,
         start: "top top",
-        end: () => `+=${len * window.innerHeight}`,
-        pin: true,
+        end: "bottom bottom",
         scrub: 1,
-        anticipatePin: 1,
         onUpdate: (self) => {
           progress.set(self.progress);
           const idx = Math.min(len - 1, Math.floor(self.progress * len));
@@ -220,7 +220,8 @@ export function Experience({ steps }: { steps?: JourneyStep[] }) {
 
         {/* Pinned scroll stage (desktop): one ticket per screen, stamped on arrival */}
         {pinned ? (
-          <div ref={stageRef} className="relative mt-6 flex h-svh flex-col items-center justify-center overflow-hidden">
+          <div ref={trackRef} className="relative mt-6" style={{ height: `${items.length * 100}svh` }}>
+            <div className="sticky top-0 flex h-svh flex-col items-center justify-center overflow-hidden">
             <div className="absolute top-4 left-1/2 w-60 -translate-x-1/2">
               <p className="text-center font-mono text-xs font-bold tracking-widest">
                 {String(stageIdx + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")} — SCROLL ↓
@@ -272,6 +273,7 @@ export function Experience({ steps }: { steps?: JourneyStep[] }) {
               >
                 ✓ APPROVED
               </motion.div>
+            </div>
             </div>
           </div>
         ) : (
